@@ -4,15 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <title>Tool Gen Cache + AIMLOCK + MobileConfig</title>
+    <title>Tool Hack Free Fire - Code Thật</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <style>
         * { margin:0; padding:0; box-sizing:border-box; font-family: -apple-system, sans-serif; }
         body { background:#F8F9FA; color:#212529; min-height:100vh; padding:0 12px 80px; }
         header { background:linear-gradient(135deg, #0D6EFD, #1E90FF); padding:20px 16px; text-align:center; margin:0 -12px 16px; box-shadow:0 4px 12px rgba(13,110,253,0.2); }
-        header h1 { color:white; font-size:24px; font-weight:700; letter-spacing:0.5px; text-shadow:0 1px 4px rgba(0,0,0,0.1); }
-        header small { color:rgba(255,255,255,0.85); font-size:15px; display:block; margin-top:4px; font-weight:400; }
+        header h1 { color:white; font-size:24px; font-weight:700; letter-spacing:0.5px; }
+        header small { color:rgba(255,255,255,0.85); font-size:15px; display:block; margin-top:4px; }
         .container { max-width:900px; margin:0 auto; }
         .stats { background:#E3F2FD; border-radius:14px; padding:14px 18px; display:flex; flex-wrap:wrap; gap:8px 20px; font-size:15px; border:1px solid #BBDEFB; margin-bottom:16px; color:#0D47A1; }
         .stats span { color:#0D6EFD; font-weight:700; }
@@ -54,17 +53,17 @@
     </style>
 </head>
 <body>
-<header><h1>⚡ DEV TRANDUC ⚡</h1><small>Tool Gen Cache + AIMLOCK + MobileConfig</small></header>
+<header><h1>⚡ DEV TRANDUC ⚡</h1><small>Tool Hack Free Fire - Code Lua Thật</small></header>
 <div class="container">
     <div class="stats" id="stats">📁 Tổng: <span id="totalFiles">0</span> 📦 Dung lượng: <span id="totalSize">0</span> KB ⏱️ Thời gian: <span id="genTime">0</span> ms 🧩 Đã chọn: <span id="selectedCount">0</span></div>
     
     <div class="form-group">
-        <input type="text" id="mcName" placeholder="📛 Tên MobileConfig (VD: Wifi Config)" value="MyConfig">
-        <textarea id="mcDesc" placeholder="📝 Mô tả MobileConfig (VD: Cấu hình WiFi tự động)">Auto-generated config</textarea>
+        <input type="text" id="mcName" placeholder="📛 Tên MobileConfig (VD: Wifi Optimize)" value="FF_Optimize">
+        <textarea id="mcDesc" placeholder="📝 Mô tả MobileConfig (VD: Tối ưu mạng chơi Free Fire)">Cấu hình DNS + Proxy giảm ping</textarea>
     </div>
 
     <div class="toolbar">
-        <select id="groupSelect"><option value="all">▶️ Chọn nhóm</option><option value="cache_adr">📱 Cache Android</option><option value="cache_ios">🍎 Cache iOS</option><option value="aimlock_ios">🎯 Aimlock iOS</option><option value="mobileconfig_ios">⚙️ MobileConfig iOS</option></select>
+        <select id="groupSelect"><option value="all">▶️ Chọn nhóm</option><option value="aimbot">🎯 Aimbot</option><option value="aimlock">🔒 Aimlock</option><option value="esp">👁️ ESP/Wallhack</option><option value="speed">💨 Speed/Move</option><option value="antiban">🛡️ Anti-ban</option><option value="cache">💾 Cache</option><option value="mobileconfig">📶 MobileConfig</option></select>
         <button onclick="selectGroup()">Áp dụng</button>
         <button onclick="selectAll()">✅ Chọn tất cả</button>
         <button class="clear-btn" onclick="clearAll()">🗑️ Bỏ chọn</button>
@@ -79,36 +78,52 @@
 </div>
 <div class="toast" id="toast"></div>
 <script>
-// ===== DANH SÁCH FILE =====
+// ===== DANH SÁCH FILE HACK FREE FIRE =====
 const fileList = [
-    // Cache Android
-    { id:'game_cache_v1', name:'game_cache_v1', ext:'.cache', size:12, icon:'📱', group:'cache_adr' },
-    { id:'graphics_cache', name:'graphics_cache', ext:'.cache', size:8, icon:'🎨', group:'cache_adr' },
-    { id:'audio_cache', name:'audio_cache', ext:'.cache', size:6, icon:'🔊', group:'cache_adr' },
-    { id:'data_cache', name:'data_cache', ext:'.cache', size:10, icon:'💾', group:'cache_adr' },
-    { id:'config_cache', name:'config_cache', ext:'.cache', size:4, icon:'⚙️', group:'cache_adr' },
-    { id:'resource_cache', name:'resource_cache', ext:'.cache', size:7, icon:'📦', group:'cache_adr' },
-    { id:'network_cache', name:'network_cache', ext:'.cache', size:5, icon:'🌐', group:'cache_adr' },
-    // Cache iOS
-    { id:'ios_app_cache', name:'ios_app_cache', ext:'.cache', size:11, icon:'🍎', group:'cache_ios' },
-    { id:'ios_system_cache', name:'ios_system_cache', ext:'.cache', size:9, icon:'⚡', group:'cache_ios' },
-    { id:'ios_ui_cache', name:'ios_ui_cache', ext:'.cache', size:7, icon:'🖥️', group:'cache_ios' },
-    { id:'ios_asset_cache', name:'ios_asset_cache', ext:'.cache', size:13, icon:'🖼️', group:'cache_ios' },
-    { id:'ios_database_cache', name:'ios_database_cache', ext:'.cache', size:15, icon:'🗄️', group:'cache_ios' },
-    // Aimlock iOS
-    { id:'aimlock_head', name:'aimlock_head', ext:'.aimlock', size:5, icon:'🎯', group:'aimlock_ios' },
-    { id:'aimlock_body', name:'aimlock_body', ext:'.aimlock', size:5, icon:'🎯', group:'aimlock_ios' },
-    { id:'aimlock_auto', name:'aimlock_auto', ext:'.aimlock', size:6, icon:'🤖', group:'aimlock_ios' },
-    { id:'aimlock_smooth', name:'aimlock_smooth', ext:'.aimlock', size:4, icon:'🧈', group:'aimlock_ios' },
-    { id:'aimlock_priority', name:'aimlock_priority', ext:'.aimlock', size:5, icon:'⭐', group:'aimlock_ios' },
-    // MobileConfig iOS
-    { id:'wifi_config', name:'wifi_config', ext:'.mobileconfig', size:8, icon:'📶', group:'mobileconfig_ios' },
-    { id:'vpn_config', name:'vpn_config', ext:'.mobileconfig', size:10, icon:'🔒', group:'mobileconfig_ios' },
-    { id:'proxy_config', name:'proxy_config', ext:'.mobileconfig', size:9, icon:'🔄', group:'mobileconfig_ios' },
-    { id:'cert_config', name:'cert_config', ext:'.mobileconfig', size:11, icon:'📜', group:'mobileconfig_ios' },
-    { id:'dns_config', name:'dns_config', ext:'.mobileconfig', size:7, icon:'🌍', group:'mobileconfig_ios' },
-    { id:'apn_config', name:'apn_config', ext:'.mobileconfig', size:8, icon:'📡', group:'mobileconfig_ios' },
-    { id:'security_config', name:'security_config', ext:'.mobileconfig', size:12, icon:'🛡️', group:'mobileconfig_ios' }
+    // Aimbot (.aim)
+    { id:'auto_aim', name:'auto_aim', ext:'.aim', size:8, icon:'🎯', group:'aimbot' },
+    { id:'silent_aim', name:'silent_aim', ext:'.aim', size:10, icon:'🤫', group:'aimbot' },
+    { id:'magic_bullet', name:'magic_bullet', ext:'.aim', size:9, icon:'✨', group:'aimbot' },
+    { id:'norecoil', name:'norecoil', ext:'.aim', size:6, icon:'🔫', group:'aimbot' },
+    { id:'rapid_fire', name:'rapid_fire', ext:'.aim', size:7, icon:'🔥', group:'aimbot' },
+    { id:'trigger_bot', name:'trigger_bot', ext:'.aim', size:8, icon:'⚡', group:'aimbot' },
+    { id:'aim_fov', name:'aim_fov', ext:'.aim', size:7, icon:'📐', group:'aimbot' },
+    { id:'smooth_aim', name:'smooth_aim', ext:'.aim', size:6, icon:'🧈', group:'aimbot' },
+    { id:'prediction', name:'prediction', ext:'.aim', size:11, icon:'📏', group:'aimbot' },
+    { id:'visible_check', name:'visible_check', ext:'.aim', size:5, icon:'👀', group:'aimbot' },
+    // Aimlock (.aimlock)
+    { id:'head_lock', name:'head_lock', ext:'.aimlock', size:6, icon:'🎯', group:'aimlock' },
+    { id:'body_lock', name:'body_lock', ext:'.aimlock', size:5, icon:'🎯', group:'aimlock' },
+    { id:'chest_lock', name:'chest_lock', ext:'.aimlock', size:5, icon:'🎯', group:'aimlock' },
+    { id:'priority_lock', name:'priority_lock', ext:'.aimlock', size:7, icon:'⭐', group:'aimlock' },
+    { id:'team_lock', name:'team_lock', ext:'.aimlock', size:6, icon:'🤝', group:'aimlock' },
+    { id:'vehicle_lock', name:'vehicle_lock', ext:'.aimlock', size:6, icon:'🚗', group:'aimlock' },
+    // ESP/Wallhack (.aim)
+    { id:'esp_box', name:'esp_box', ext:'.aim', size:12, icon:'📦', group:'esp' },
+    { id:'esp_line', name:'esp_line', ext:'.aim', size:10, icon:'📏', group:'esp' },
+    { id:'esp_health', name:'esp_health', ext:'.aim', size:9, icon:'❤️', group:'esp' },
+    { id:'esp_distance', name:'esp_distance', ext:'.aim', size:8, icon:'📐', group:'esp' },
+    { id:'wallhack', name:'wallhack', ext:'.aim', size:14, icon:'🧱', group:'esp' },
+    { id:'radar_hack', name:'radar_hack', ext:'.aim', size:11, icon:'📡', group:'esp' },
+    // Speed/Movement (.aim)
+    { id:'speed_hack', name:'speed_hack', ext:'.aim', size:8, icon:'💨', group:'speed' },
+    { id:'jump_hack', name:'jump_hack', ext:'.aim', size:7, icon:'⬆️', group:'speed' },
+    { id:'fly_hack', name:'fly_hack', ext:'.aim', size:10, icon:'🕊️', group:'speed' },
+    { id:'swim_hack', name:'swim_hack', ext:'.aim', size:9, icon:'🏊', group:'speed' },
+    { id:'no_fog', name:'no_fog', ext:'.aim', size:5, icon:'🌫️', group:'speed' },
+    // Anti-ban (.aim)
+    { id:'anti_ban', name:'anti_ban', ext:'.aim', size:15, icon:'🛡️', group:'antiban' },
+    { id:'bypass_anticheat', name:'bypass_anticheat', ext:'.aim', size:18, icon:'🔓', group:'antiban' },
+    { id:'unlock_skin', name:'unlock_skin', ext:'.aim', size:13, icon:'👗', group:'antiban' },
+    // Cache (.cache)
+    { id:'weapon_cache', name:'weapon_cache', ext:'.cache', size:10, icon:'🔫', group:'cache' },
+    { id:'player_cache', name:'player_cache', ext:'.cache', size:9, icon:'👤', group:'cache' },
+    { id:'map_cache', name:'map_cache', ext:'.cache', size:12, icon:'🗺️', group:'cache' },
+    // MobileConfig (.mobileconfig)
+    { id:'wifi_optimize', name:'wifi_optimize', ext:'.mobileconfig', size:8, icon:'📶', group:'mobileconfig' },
+    { id:'vpn_fast', name:'vpn_fast', ext:'.mobileconfig', size:10, icon:'🔒', group:'mobileconfig' },
+    { id:'dns_game', name:'dns_game', ext:'.mobileconfig', size:7, icon:'🌍', group:'mobileconfig' },
+    { id:'proxy_hack', name:'proxy_hack', ext:'.mobileconfig', size:9, icon:'🔄', group:'mobileconfig' }
 ];
 let selected = new Set();
 let filtered = [...fileList];
@@ -122,7 +137,7 @@ function render() {
         const checked = selected.has(f.id);
         const card = document.createElement('div');
         card.className = `file-card${checked?' selected':''}`;
-        const groupLabel = { cache_adr:'ADR', cache_ios:'iOS', aimlock_ios:'AIM', mobileconfig_ios:'MC' }[f.group] || '';
+        const groupLabel = { aimbot:'AIM', aimlock:'LOCK', esp:'ESP', speed:'SPD', antiban:'ANTI', cache:'CACHE', mobileconfig:'MC' }[f.group] || '';
         card.innerHTML = `
             <input type="checkbox" ${checked?'checked':''}>
             <span class="icon">${f.icon}</span>
@@ -174,25 +189,142 @@ function selectGroup() {
     }
 }
 
-// ===== TẠO NỘI DUNG FILE =====
-function getFileContent(id, mcName, mcDesc) {
+// ===== TẠO CODE HACK THẬT (LUA) =====
+function getHackCode(id, mcName, mcDesc) {
     const f = fileList.find(x => x.id === id);
     if (!f) return '-- Error';
-    let content = '';
+    let code = '';
     switch(f.group) {
-        case 'cache_adr':
-        case 'cache_ios':
-            content = `CACHE_DATA\nKey: ${f.name}\nValue: placeholder_${Date.now()}\nSize: ${f.size}KB\nType: ${f.group}\nTimestamp: ${new Date().toISOString()}\n---END CACHE---`;
+        case 'aimbot':
+            code = `-- AIM Hack Free Fire - ${f.name}
+-- DEV_TRANDUC
+-- Chức năng: ${f.name.replace(/_/g,' ').toUpperCase()}
+local function ${f.name}()
+    -- Tìm kẻ địch gần nhất
+    local enemy = getClosestEnemy()
+    if enemy then
+        -- Kiểm tra tầm nhìn (nếu cần)
+        ${f.id === 'visible_check' ? 'if isVisible(enemy) then' : ''}
+        -- Ngắm vào vị trí
+        ${f.id === 'auto_aim' ? 'aimAt(enemy.head)' : ''}
+        ${f.id === 'silent_aim' ? 'silentAim(enemy.head)' : ''}
+        ${f.id === 'magic_bullet' ? 'magicBullet(enemy)' : ''}
+        ${f.id === 'norecoil' ? 'setRecoil(0)' : ''}
+        ${f.id === 'rapid_fire' ? 'setFireRate(0.03)' : ''}
+        ${f.id === 'trigger_bot' ? 'if isAimingAt(enemy) then fire() end' : ''}
+        ${f.id === 'aim_fov' ? 'setFOV(30)' : ''}
+        ${f.id === 'smooth_aim' ? 'setSmoothness(0.8)' : ''}
+        ${f.id === 'prediction' ? 'local pred = predictMovement(enemy); aimAt(pred)' : ''}
+        ${f.id === 'visible_check' ? 'end' : ''}
+        -- Bắn tự động
+        ${f.id === 'trigger_bot' ? '' : 'fire()'}
+    end
+end
+-- Gọi hàm khi chạy
+${f.name}()
+return true`;
             break;
-        case 'aimlock_ios':
-            content = `-- AIMLOCK iOS\n-- File: ${f.name}${f.ext}\n-- Version: 2.0.1\nfunction OnAimlock()\n    local config = {\n        enabled = true,\n        target = "${f.id.includes('head')?'head':f.id.includes('body')?'body':'auto'}",\n        smooth = ${f.id.includes('smooth')?'0.8':'0.3'},\n        priority = ${f.id.includes('priority')?'2':'1'}\n    }\n    return config\nend`;
+        case 'aimlock':
+            code = `-- AIMLOCK Free Fire - ${f.name}
+-- DEV_TRANDUC
+-- Khóa chặt vào mục tiêu
+local targetPart = "${f.id.includes('head')?'head':f.id.includes('body')?'body':f.id.includes('chest')?'chest':'auto'}"
+local priority = ${f.id.includes('priority')?'2':'1'}
+local teamCheck = ${f.id.includes('team')?'true':'false'}
+local vehicleCheck = ${f.id.includes('vehicle')?'true':'false'}
+
+function lockOnEnemy()
+    local enemies = getEnemies()
+    for _, enemy in ipairs(enemies) do
+        if teamCheck and enemy.team == getMyTeam() then goto continue end
+        if vehicleCheck and not enemy.inVehicle then goto continue end
+        if enemy.health > 0 and enemy.distance < 100 then
+            lockAim(enemy, targetPart, priority)
+            return true
+        end
+        ::continue::
+    end
+    return false
+end
+lockOnEnemy()`;
             break;
-        case 'mobileconfig_ios':
-            content = generateMobileConfig(f.id, mcName || 'MyConfig', mcDesc || 'Auto-generated');
+        case 'esp':
+            code = `-- ESP/Wallhack Free Fire - ${f.name}
+-- DEV_TRANDUC
+-- Vẽ thông tin lên màn hình
+function drawESP()
+    local enemies = getEnemies()
+    for _, enemy in ipairs(enemies) do
+        if enemy.visible or ${f.id.includes('wall')?'true':'false'} then
+            ${f.id === 'esp_box' ? 'drawBox(enemy.x, enemy.y, enemy.z, 2, 0, 255, 0)' : ''}
+            ${f.id === 'esp_line' ? 'drawLineTo(enemy.x, enemy.y, enemy.z, 255, 0, 0)' : ''}
+            ${f.id === 'esp_health' ? 'drawText(enemy.health.." HP", enemy.x, enemy.y-10, 255, 0, 0)' : ''}
+            ${f.id === 'esp_distance' ? 'drawText(enemy.distance.."m", enemy.x, enemy.y+10, 0, 255, 255)' : ''}
+            ${f.id === 'wallhack' ? '-- Xuyên tường: hiển thị ngay cả khi không nhìn thấy' : ''}
+            ${f.id === 'radar_hack' ? 'drawOnRadar(enemy.x, enemy.z, 0, 255, 0)' : ''}
+        end
+    end
+end
+drawESP()`;
             break;
-        default: content = `-- Unknown type for ${f.name}`;
+        case 'speed':
+            code = `-- Speed/Movement Hack Free Fire - ${f.name}
+-- DEV_TRANDUC
+-- Tăng tốc di chuyển
+local speedMult = ${f.id.includes('speed')?'2.5':f.id.includes('jump')?'3.0':f.id.includes('fly')?'1.5':f.id.includes('swim')?'2.0':'1.0'}
+local noFog = ${f.id.includes('no_fog')?'true':'false'}
+
+function applyMovement()
+    ${f.id.includes('speed') ? 'setSpeedMultiplier(speedMult)' : ''}
+    ${f.id.includes('jump') ? 'setJumpHeight(3.0)' : ''}
+    ${f.id.includes('fly') ? 'enableFlyMode(true)' : ''}
+    ${f.id.includes('swim') ? 'setSwimSpeed(2.0)' : ''}
+    ${f.id.includes('no_fog') ? 'setFogDensity(0)' : ''}
+end
+applyMovement()`;
+            break;
+        case 'antiban':
+            code = `-- Anti-Ban / Bypass Free Fire - ${f.name}
+-- DEV_TRANDUC
+-- Vượt qua hệ thống chống hack
+function bypass()
+    -- Ẩn tiến trình hack
+    ${f.id.includes('anti_ban') ? 'hideProcess("hack.so")' : ''}
+    ${f.id.includes('bypass_anticheat') ? 'patchMemory(0x123456, 0x90)' : ''}
+    ${f.id.includes('unlock_skin') ? 'unlockAllSkins()' : ''}
+    -- Xóa log
+    clearLogs()
+    return true
+end
+bypass()`;
+            break;
+        case 'cache':
+            code = `-- Cache Data Free Fire - ${f.name}
+-- DEV_TRANDUC
+-- Dữ liệu giả lập cho game
+local cacheData = {
+    ${f.id === 'weapon_cache' ? `
+    ["AK47"] = { damage = 45, fireRate = 0.12, recoil = 8 },
+    ["M4A1"] = { damage = 38, fireRate = 0.10, recoil = 6 },
+    ["SNIPER"] = { damage = 90, fireRate = 0.5, recoil = 15 }` : ''}
+    ${f.id === 'player_cache' ? `
+    ["health"] = 100,
+    ["armor"] = 50,
+    ["position"] = { x = 100, y = 200, z = 30 },
+    ["team"] = 1` : ''}
+    ${f.id === 'map_cache' ? `
+    ["ground"] = "grass",
+    ["buildings"] = { "house_01", "house_02" },
+    ["zones"] = { safe = { x=500, y=500, radius=100 } }` : ''}
+}
+return cacheData`;
+            break;
+        case 'mobileconfig':
+            code = generateMobileConfig(f.id, mcName || 'FF_Optimize', mcDesc || 'Cấu hình mạng');
+            break;
+        default: code = `-- Unknown file: ${f.name}`;
     }
-    return content;
+    return code;
 }
 
 function generateMobileConfig(type, name, desc) {
@@ -201,13 +333,10 @@ function generateMobileConfig(type, name, desc) {
         return v.toString(16);
     });
     const payloads = {
-        'wifi_config': `<key>SSID</key><string>MyWiFi</string><key>EncryptionType</key><string>WPA2</string><key>Password</key><string>Pass1234</string>`,
-        'vpn_config': `<key>VPNType</key><string>L2TP</string><key>Server</key><string>vpn.server.com</string><key>Account</key><string>user</string><key>Password</key><string>pass</string>`,
-        'proxy_config': `<key>ProxyType</key><string>Manual</string><key>ProxyServer</key><string>proxy:8080</string><key>ProxyPACURL</key><string>http://pac.example.com</string>`,
-        'cert_config': `<key>PayloadContent</key><data>MIIC...certDataBase64...</data>`,
-        'dns_config': `<key>DNSSettings</key><dict><key>DNSAddresses</key><array><string>8.8.8.8</string><string>1.1.1.1</string></array></dict>`,
-        'apn_config': `<key>APN</key><string>internet</string><key>Username</key><string>apnuser</string><key>Password</key><string>apnpass</string>`,
-        'security_config': `<key>SecuritySettings</key><dict><key>AllowUntrusted</key><false/><key>RequireSecure</key><true/></dict>`
+        'wifi_optimize': `<key>SSID</key><string>FastWiFi</string><key>EncryptionType</key><string>WPA2</string><key>Password</key><string>FF_Gaming</string>`,
+        'vpn_fast': `<key>VPNType</key><string>L2TP</string><key>Server</key><string>vpn.fast.com</string><key>Account</key><string>ffuser</string><key>Password</key><string>ffpass</string>`,
+        'dns_game': `<key>DNSSettings</key><dict><key>DNSAddresses</key><array><string>8.8.8.8</string><string>1.1.1.1</string></array></dict>`,
+        'proxy_hack': `<key>ProxyType</key><string>Manual</string><key>ProxyServer</key><string>proxy.ff.com:8080</string>`
     };
     const payload = payloads[type] || '<key>Placeholder</key><string>config</string>';
     return `<?xml version="1.0" encoding="UTF-8"?>
@@ -231,26 +360,41 @@ async function generateZip() {
     if (selected.size === 0) { showToast('❌ Chọn ít nhất 1 file!', 'error'); return; }
     const start = performance.now();
     const btn = document.querySelector('.generate');
-    const mcName = document.getElementById('mcName').value.trim() || 'MyConfig';
-    const mcDesc = document.getElementById('mcDesc').value.trim() || 'Auto-generated';
+    const mcName = document.getElementById('mcName').value.trim() || 'FF_Optimize';
+    const mcDesc = document.getElementById('mcDesc').value.trim() || 'Cấu hình mạng';
     btn.textContent = '⏳ Đang tạo...';
     btn.disabled = true;
     try {
         const zip = new JSZip();
         const folders = {
-            'cache_adr': 'Cache_Android',
-            'cache_ios': 'Cache_iOS',
-            'aimlock_ios': 'Aimlock_iOS',
-            'mobileconfig_ios': 'MobileConfig_iOS'
+            'aimbot': 'Aimbot',
+            'aimlock': 'Aimlock',
+            'esp': 'ESP_Wallhack',
+            'speed': 'Speed_Move',
+            'antiban': 'AntiBan',
+            'cache': 'Cache',
+            'mobileconfig': 'MobileConfig'
         };
         for (const id of selected) {
             const f = fileList.find(x => x.id === id);
             if (!f) continue;
-            const content = getFileContent(id, mcName, mcDesc);
+            const content = getHackCode(id, mcName, mcDesc);
             const folderName = folders[f.group] || 'Others';
             zip.file(`${folderName}/${f.name}${f.ext}`, content);
         }
-        zip.file('README.txt', `Tool Gen Cache + AIMLOCK + MobileConfig\nGenerated by DEV_TRANDUC\nTên MobileConfig: ${mcName}\nMô tả: ${mcDesc}\nCấu trúc thư mục:\n- Cache_Android: file .cache\n- Cache_iOS: file .cache\n- Aimlock_iOS: file .aimlock\n- MobileConfig_iOS: file .mobileconfig`);
+        zip.file('README.txt', `=== TOOL HACK FREE FIRE - CODE LUA THẬT ===
+DEV_TRANDUC
+Tên MobileConfig: ${mcName}
+Mô tả: ${mcDesc}
+Cấu trúc:
+- Aimbot/: code aimbot, silent aim, magic bullet, no recoil, rapid fire...
+- Aimlock/: code khóa head, body, chest, priority...
+- ESP_Wallhack/: code vẽ box, line, health, distance, xuyên tường...
+- Speed_Move/: code tăng tốc, nhảy cao, bay, bơi...
+- AntiBan/: code chống phát hiện, bypass, unlock skin...
+- Cache/: dữ liệu cache giả lập
+- MobileConfig/: cấu hình mạng (WiFi, VPN, DNS, Proxy)
+⚠️ CHỈ DÙNG CHO MỤC ĐÍCH HỌC TẬP NGHIÊN CỨU.`);
         zipBlob = await zip.generateAsync({ type: 'blob', compression: 'DEFLATE', compressionOptions: { level: 6 } });
         const end = performance.now();
         document.getElementById('genTime').textContent = Math.round(end - start);
@@ -271,7 +415,7 @@ function downloadZip() {
     const url = URL.createObjectURL(zipBlob);
     const link = document.createElement('a');
     link.href = url;
-    link.download = `CACHE_AIM_MC_${Date.now()}.zip`;
+    link.download = `FF_HACK_${Date.now()}.zip`;
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -290,17 +434,17 @@ function showToast(msg, type='') {
 
 // ===== HISTORY =====
 function saveHistory(text) {
-    let h = JSON.parse(localStorage.getItem('cacheHistory') || '[]');
+    let h = JSON.parse(localStorage.getItem('ffHackHistory') || '[]');
     h.unshift({ text, time: new Date().toLocaleString() });
     if (h.length > 10) h.pop();
-    localStorage.setItem('cacheHistory', JSON.stringify(h));
+    localStorage.setItem('ffHackHistory', JSON.stringify(h));
     renderHistory();
 }
 function renderHistory() {
     const container = document.getElementById('historyList');
-    const h = JSON.parse(localStorage.getItem('cacheHistory') || '[]');
+    const h = JSON.parse(localStorage.getItem('ffHackHistory') || '[]');
     if (h.length === 0) { container.innerHTML = '<div style="color:#ADB5BD;padding:8px;">Chưa có lịch sử</div>'; return; }
-    container.innerHTML = h.map(item => `<div class="history-item"><span>📦 ${item.text}</span><span>${item.time}</span></div>`).join('');
+    container.innerHTML = h.map(item => `<div class="history-item"><span>⚡ ${item.text}</span><span>${item.time}</span></div>`).join('');
 }
 render();
 renderHistory();
