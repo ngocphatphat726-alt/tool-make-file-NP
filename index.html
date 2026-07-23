@@ -15,10 +15,11 @@
         .title { font-size:18px; font-weight:700; margin-bottom:15px; color:#fff; text-shadow:0 0 8px rgba(255,0,0,0.5); }
         .section { display:none; }
         .section.active { display:block; }
-        .input-group { margin-bottom:12px; }
+        .input-group { margin-bottom:12px; position:relative; }
         .key-input { width:100%; padding:12px 14px; background-color:#140808; border:1px solid rgba(255,50,50,0.4); border-radius:10px; color:#fff; font-size:13px; outline:none; text-align:center; transition:all 0.3s; }
         .key-input::placeholder { color:#885555; }
         .key-input:focus { border-color:#ff3333; box-shadow:0 0 10px rgba(255,0,0,0.5); }
+        .key-input:disabled { opacity:0.6; cursor:not-allowed; background-color:#0a0303; }
         .mode-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:5px; margin-bottom:10px; }
         .mode-btn { padding:7px 3px; background:#140808; border:1px solid rgba(255,50,50,0.25); border-radius:5px; color:#885555; font-size:10px; font-weight:600; cursor:pointer; transition:all 0.2s; line-height:1.2; }
         .mode-btn.active { background:linear-gradient(135deg,#cc0000,#880000); color:#fff; border-color:#ff4d4d; box-shadow:0 0 8px rgba(255,0,0,0.4); }
@@ -37,6 +38,7 @@
         .btn-ios:hover { background:linear-gradient(135deg,#0066cc,#003366); border-color:#3399ff; }
         .badge { font-size:8px; background:#2a0a0a; border-radius:3px; padding:1px 4px; color:#ff6666; margin-left:3px; }
         .badge-ios { background:#0a1a2a; color:#66aaff; }
+        .key-hint { font-size:10px; color:#885555; margin-top:4px; }
     </style>
 </head>
 <body oncontextmenu="return false;" onkeydown="return false;">
@@ -50,11 +52,11 @@
         <!-- PAGE 1: KEY -->
         <div id="page1" class="section active">
             <div class="input-group">
-                <input type="text" id="keyInput" class="key-input" placeholder="Nhập Key..." spellcheck="false">
+                <input type="text" id="keyInput" class="key-input" placeholder="Nhập Key..." spellcheck="false" disabled>
             </div>
             <div id="msg1" style="color:#ff3333;font-size:12px;margin-bottom:12px;min-height:16px;"></div>
             <div class="btn-row">
-                <a href="https://zalo.me/84976457016" target="_blank" class="btn"><i class="fa-solid fa-comment-dots"></i> Zalo</a>
+                <a href="https://zalo.me/0939251990" target="_blank" class="btn"><i class="fa-solid fa-comment-dots"></i> Zalo</a>
                 <button class="btn" id="nextBtn">Tiếp tục <i class="fa-solid fa-arrow-right"></i></button>
             </div>
         </div>
@@ -62,19 +64,15 @@
         <!-- PAGE 2: MODE + FILE -->
         <div id="page2" class="section">
             <div class="mode-grid" id="modeGrid">
-                <!-- Hàng 1: Aim cơ bản -->
                 <button class="mode-btn active" data-mode="aimbody">AimBody</button>
                 <button class="mode-btn" data-mode="aimco">Aim Cổ</button>
                 <button class="mode-btn" data-mode="aimdrag">Aim Drag <span class="badge">kéo</span></button>
-                <!-- Hàng 2: Aim đặc biệt -->
                 <button class="mode-btn" data-mode="aimmagic">Aim Magic <span class="badge">90%</span></button>
                 <button class="mode-btn" data-mode="dinhvi_xanh">Định vị Xanh</button>
                 <button class="mode-btn" data-mode="dinhvi_hong">Định vị Hồng</button>
-                <!-- Hàng 3: Antena -->
                 <button class="mode-btn" data-mode="antena_noaim">Antena No Aim</button>
                 <button class="mode-btn" data-mode="aimantena">Aim Antena</button>
                 <button class="mode-btn" data-mode="aimcac">Aim Cặc</button>
-                <!-- Hàng 4: Chest + iOS -->
                 <button class="mode-btn" data-mode="aimvu">Aim Vú (Chest)</button>
                 <button class="mode-btn ios-only" data-mode="mobileconfig_aimlock">AimLock iOS <span class="badge badge-ios">.mobileconfig</span></button>
                 <button class="mode-btn ios-only" data-mode="mobileconfig_aimlock90">AimLock 90% <span class="badge badge-ios">.mobileconfig</span></button>
@@ -105,9 +103,14 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script>
         // ===== KEY VERIFY =====
-        const _0x9b = ["QURLQzA5OUUwMg=="];
+        // KEY MỚI: Phatno1aimlock
+        // Mã hóa Base64: UGhhdG5vMWFpbWxvY2s=
+        const _0x9b = ["UGhhdG5vMWFpbWxvY2s="];
         function _verify(k) {
-            try { let decoded = atob(_0x9b[0]); return k.trim() === decoded; } catch(e) { return false; }
+            try { 
+                let decoded = atob(_0x9b[0]); 
+                return k.trim() === decoded; 
+            } catch(e) { return false; }
         }
 
         // ===== STATE =====
@@ -125,14 +128,56 @@
         const keyInput = document.getElementById('keyInput');
         const msg1 = document.getElementById('msg1');
 
-        nextBtn.addEventListener('click', function() {
-            if (_verify(keyInput.value)) {
-                msg1.innerText = "";
-                page1.classList.remove('active');
-                page2.classList.add('active');
-            } else {
-                msg1.innerText = "Key không chính xác!";
+        // ===== KHÓA KHÔNG CHO GHI KEY =====
+        // 1. Disable input ngay từ đầu
+        keyInput.disabled = true;
+        keyInput.value = "Phatno1aimlock";
+        
+        // 2. Chặn tất cả sự kiện gõ phím trên input
+        keyInput.addEventListener('keydown', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            return false;
+        });
+        keyInput.addEventListener('keyup', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            return false;
+        });
+        keyInput.addEventListener('keypress', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            return false;
+        });
+        keyInput.addEventListener('input', function(e) {
+            this.value = "Phatno1aimlock";
+            return false;
+        });
+        keyInput.addEventListener('paste', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            return false;
+        });
+        
+        // 3. Chặn context menu trên input
+        keyInput.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+            return false;
+        });
+
+        // 4. Kiểm tra định kỳ để đảm bảo giá trị không bị thay đổi
+        setInterval(function() {
+            if (keyInput.value !== "Phatno1aimlock") {
+                keyInput.value = "Phatno1aimlock";
             }
+        }, 100);
+
+        // ===== XỬ LÝ NEXT =====
+        nextBtn.addEventListener('click', function() {
+            // Luôn luôn đúng vì key đã được hardcode
+            page1.classList.remove('active');
+            page2.classList.add('active');
+            msg1.innerText = "";
         });
 
         backBtn.addEventListener('click', function() {
@@ -148,14 +193,12 @@
                 this.classList.add('active');
                 selectedMode = this.getAttribute('data-mode');
                 isIOSMode = selectedMode.startsWith('mobileconfig');
-                // Cập nhật label file
                 const label = document.getElementById('fileNameText');
                 if (isIOSMode) {
                     label.innerText = 'Chọn file .mobileconfig (iOS)';
                 } else {
                     label.innerText = 'Chọn file make data-cache';
                 }
-                // Reset file input
                 document.getElementById('fileInput').value = '';
                 uploadedFile = null;
                 processedBlob = null;
@@ -184,7 +227,6 @@
             return `${line} -> [${modeLabel}_PATCHING...]`;
         }
 
-        // Hàm tạo mobileconfig với AimLock (kéo tâm 90%)
         function generateMobileConfig(aimPercent) {
             const percent = aimPercent || 90;
             const uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
@@ -257,24 +299,17 @@
 </plist>`;
         }
 
-        // Hàm xử lý file theo mode (tác dụng 100% với game)
         function applyAimPatch(uint8Array, mode) {
             const len = uint8Array.length;
-            // Các pattern đặc trưng cho từng loại aim (giá trị hex thực tế)
             switch(mode) {
                 case 'aimbody':
-                    // Patch Body: 0x55 XOR + set giá trị aim body
                     for (let i=0; i<Math.min(len, 80); i++) {
                         uint8Array[i] = uint8Array[i] ^ 0x55;
                         if (i % 3 === 0) uint8Array[i] = 0xAA;
                     }
-                    // Chèn signature aim body
                     if (len > 100) {
-                        uint8Array[50] = 0x42; // 'B'
-                        uint8Array[51] = 0x4F; // 'O'
-                        uint8Array[52] = 0x44; // 'D'
-                        uint8Array[53] = 0x59; // 'Y'
-                        uint8Array[54] = 0x01;
+                        uint8Array[50] = 0x42; uint8Array[51] = 0x4F; uint8Array[52] = 0x44;
+                        uint8Array[53] = 0x59; uint8Array[54] = 0x01;
                     }
                     break;
                 case 'aimco':
@@ -283,142 +318,95 @@
                         if (i % 2 === 0) uint8Array[i] = 0xBB;
                     }
                     if (len > 100) {
-                        uint8Array[60] = 0x48; // 'H'
-                        uint8Array[61] = 0x45; // 'E'
-                        uint8Array[62] = 0x41; // 'A'
-                        uint8Array[63] = 0x44; // 'D'
-                        uint8Array[64] = 0x02;
+                        uint8Array[60] = 0x48; uint8Array[61] = 0x45; uint8Array[62] = 0x41;
+                        uint8Array[63] = 0x44; uint8Array[64] = 0x02;
                     }
                     break;
                 case 'aimdrag':
-                    // Aim Drag - kéo tâm
                     for (let i=0; i<Math.min(len, 90); i++) {
                         uint8Array[i] = uint8Array[i] ^ 0x33;
                         if (i % 5 === 0) uint8Array[i] = 0xDD;
                         if (i % 7 === 0) uint8Array[i] = 0xEE;
                     }
                     if (len > 100) {
-                        uint8Array[70] = 0x44; // 'D'
-                        uint8Array[71] = 0x52; // 'R'
-                        uint8Array[72] = 0x41; // 'A'
-                        uint8Array[73] = 0x47; // 'G'
-                        uint8Array[74] = 0x03;
-                        uint8Array[75] = 0x5A; // kéo 90%
+                        uint8Array[70] = 0x44; uint8Array[71] = 0x52; uint8Array[72] = 0x41;
+                        uint8Array[73] = 0x47; uint8Array[74] = 0x03; uint8Array[75] = 0x5A;
                     }
                     break;
                 case 'aimmagic':
-                    // Aim Magic - 90% tự động
                     for (let i=0; i<Math.min(len, 100); i++) {
                         uint8Array[i] = uint8Array[i] ^ 0x99;
                         if (i % 4 === 0) uint8Array[i] = 0xCC;
                         if (i % 6 === 0) uint8Array[i] = 0xFF;
                     }
                     if (len > 100) {
-                        uint8Array[80] = 0x4D; // 'M'
-                        uint8Array[81] = 0x41; // 'A'
-                        uint8Array[82] = 0x47; // 'G'
-                        uint8Array[83] = 0x49; // 'I'
-                        uint8Array[84] = 0x43; // 'C'
-                        uint8Array[85] = 0x5A; // 90%
+                        uint8Array[80] = 0x4D; uint8Array[81] = 0x41; uint8Array[82] = 0x47;
+                        uint8Array[83] = 0x49; uint8Array[84] = 0x43; uint8Array[85] = 0x5A;
                     }
                     break;
                 case 'dinhvi_xanh':
-                    // Định vị xanh (người) - nhận diện player màu xanh
                     for (let i=0; i<Math.min(len, 60); i++) {
                         uint8Array[i] = uint8Array[i] ^ 0x22;
                         if (i % 2 === 0) uint8Array[i] = 0x88;
                     }
                     if (len > 100) {
-                        uint8Array[90] = 0x47; // 'G'
-                        uint8Array[91] = 0x52; // 'R'
-                        uint8Array[92] = 0x45; // 'E'
-                        uint8Array[93] = 0x45; // 'E'
-                        uint8Array[94] = 0x4E; // 'N'
-                        uint8Array[95] = 0x01;
+                        uint8Array[90] = 0x47; uint8Array[91] = 0x52; uint8Array[92] = 0x45;
+                        uint8Array[93] = 0x45; uint8Array[94] = 0x4E; uint8Array[95] = 0x01;
                     }
                     break;
                 case 'dinhvi_hong':
-                    // Định vị hồng (người) - nhận diện player màu hồng
                     for (let i=0; i<Math.min(len, 60); i++) {
                         uint8Array[i] = uint8Array[i] ^ 0x44;
                         if (i % 2 === 0) uint8Array[i] = 0x66;
                     }
                     if (len > 100) {
-                        uint8Array[90] = 0x50; // 'P'
-                        uint8Array[91] = 0x49; // 'I'
-                        uint8Array[92] = 0x4E; // 'N'
-                        uint8Array[93] = 0x4B; // 'K'
-                        uint8Array[94] = 0x02;
+                        uint8Array[90] = 0x50; uint8Array[91] = 0x49; uint8Array[92] = 0x4E;
+                        uint8Array[93] = 0x4B; uint8Array[94] = 0x02;
                     }
                     break;
                 case 'antena_noaim':
-                    // Antena No Aim - vô hiệu hóa aim từ antena
                     for (let i=0; i<Math.min(len, 50); i++) {
                         uint8Array[i] = uint8Array[i] ^ 0x11;
                         if (i % 3 === 0) uint8Array[i] = 0x00;
                     }
                     if (len > 100) {
-                        uint8Array[100] = 0x41; // 'A'
-                        uint8Array[101] = 0x4E; // 'N'
-                        uint8Array[102] = 0x54; // 'T'
-                        uint8Array[103] = 0x45; // 'E'
-                        uint8Array[104] = 0x4E; // 'N'
-                        uint8Array[105] = 0x41; // 'A'
+                        uint8Array[100] = 0x41; uint8Array[101] = 0x4E; uint8Array[102] = 0x54;
+                        uint8Array[103] = 0x45; uint8Array[104] = 0x4E; uint8Array[105] = 0x41;
                         uint8Array[106] = 0x00;
                     }
                     break;
                 case 'aimantena':
-                    // Aim Antena - aim qua antena
                     for (let i=0; i<Math.min(len, 70); i++) {
                         uint8Array[i] = uint8Array[i] ^ 0x66;
                         if (i % 4 === 0) uint8Array[i] = 0x99;
                     }
                     if (len > 100) {
-                        uint8Array[100] = 0x41; // 'A'
-                        uint8Array[101] = 0x49; // 'I'
-                        uint8Array[102] = 0x4D; // 'M'
-                        uint8Array[103] = 0x41; // 'A'
-                        uint8Array[104] = 0x4E; // 'N'
-                        uint8Array[105] = 0x54; // 'T'
+                        uint8Array[100] = 0x41; uint8Array[101] = 0x49; uint8Array[102] = 0x4D;
+                        uint8Array[103] = 0x41; uint8Array[104] = 0x4E; uint8Array[105] = 0x54;
                         uint8Array[106] = 0x01;
                     }
                     break;
                 case 'aimcac':
-                    // Aim Cặc - groin/penis targeting
                     for (let i=0; i<Math.min(len, 80); i++) {
                         uint8Array[i] = uint8Array[i] ^ 0x88;
                         if (i % 3 === 0) uint8Array[i] = 0xCC;
                     }
                     if (len > 100) {
-                        uint8Array[110] = 0x47; // 'G'
-                        uint8Array[111] = 0x52; // 'R'
-                        uint8Array[112] = 0x4F; // 'O'
-                        uint8Array[113] = 0x49; // 'I'
-                        uint8Array[114] = 0x4E; // 'N'
-                        uint8Array[115] = 0x03;
+                        uint8Array[110] = 0x47; uint8Array[111] = 0x52; uint8Array[112] = 0x4F;
+                        uint8Array[113] = 0x49; uint8Array[114] = 0x4E; uint8Array[115] = 0x03;
                     }
                     break;
                 case 'aimvu':
-                    // Aim Vú (Chest)
                     for (let i=0; i<Math.min(len, 70); i++) {
                         uint8Array[i] = uint8Array[i] ^ 0x44;
                         if (i % 2 === 0) uint8Array[i] = 0xAA;
                     }
                     if (len > 100) {
-                        uint8Array[120] = 0x43; // 'C'
-                        uint8Array[121] = 0x48; // 'H'
-                        uint8Array[122] = 0x45; // 'E'
-                        uint8Array[123] = 0x53; // 'S'
-                        uint8Array[124] = 0x54; // 'T'
-                        uint8Array[125] = 0x02;
+                        uint8Array[120] = 0x43; uint8Array[121] = 0x48; uint8Array[122] = 0x45;
+                        uint8Array[123] = 0x53; uint8Array[124] = 0x54; uint8Array[125] = 0x02;
                     }
                     break;
-                case 'mobileconfig_aimlock':
-                case 'mobileconfig_aimlock90':
-                    // Xử lý riêng bên ngoài
-                    break;
                 default:
-                    // Fallback XOR
                     for (let i=0; i<Math.min(len, 40); i++) {
                         uint8Array[i] = uint8Array[i] ^ 0xAA;
                     }
@@ -466,7 +454,6 @@
 
         async function processFileContent(file) {
             try {
-                // Kiểm tra nếu là mobileconfig mode
                 if (selectedMode === 'mobileconfig_aimlock' || selectedMode === 'mobileconfig_aimlock90') {
                     const percent = selectedMode === 'mobileconfig_aimlock90' ? 90 : 70;
                     const xmlContent = generateMobileConfig(percent);
@@ -485,11 +472,8 @@
                     return;
                 }
 
-                // Xử lý file cache thông thường
                 const arrayBuffer = await file.arrayBuffer();
                 let uint8Array = new Uint8Array(arrayBuffer);
-
-                // Áp dụng patch aim (tác dụng 100%)
                 uint8Array = applyAimPatch(uint8Array, selectedMode);
 
                 const zip = new JSZip();
@@ -532,6 +516,14 @@
         document.addEventListener('keydown', function(event) {
             if (event.keyCode == 123 || (event.ctrlKey && event.shiftKey && (event.keyCode == 73 || event.keyCode == 74)) || (event.ctrlKey && event.keyCode == 85)) {
                 event.preventDefault();
+                return false;
+            }
+        });
+
+        // Khóa F12, Ctrl+Shift+I, Ctrl+U
+        document.addEventListener('keydown', function(e) {
+            if (e.keyCode === 123 || e.keyCode === 85 || (e.ctrlKey && e.shiftKey && e.keyCode === 73) || (e.ctrlKey && e.keyCode === 85)) {
+                e.preventDefault();
                 return false;
             }
         });
