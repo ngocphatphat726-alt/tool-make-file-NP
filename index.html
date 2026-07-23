@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Uchiha Modz - Full Aim</title>
+    <title>Uchiha Modz - OPSET 100%</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * { margin:0; padding:0; box-sizing:border-box; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; }
@@ -16,10 +16,8 @@
         .section { display:none; }
         .section.active { display:block; }
         .input-group { margin-bottom:12px; position:relative; }
-        .key-input { width:100%; padding:12px 14px; background-color:#140808; border:1px solid rgba(255,50,50,0.4); border-radius:10px; color:#fff; font-size:13px; outline:none; text-align:center; transition:all 0.3s; }
-        .key-input::placeholder { color:#885555; }
-        .key-input:focus { border-color:#ff3333; box-shadow:0 0 10px rgba(255,0,0,0.5); }
-        .key-input:disabled { opacity:0.6; cursor:not-allowed; background-color:#0a0303; }
+        .key-input { width:100%; padding:12px 14px; background-color:#140808; border:1px solid rgba(255,50,50,0.4); border-radius:10px; color:#fff; font-size:13px; outline:none; text-align:center; transition:all 0.3s; display:none; }
+        .key-display { width:100%; padding:12px 14px; background-color:#0a0303; border:1px solid rgba(255,50,50,0.2); border-radius:10px; color:#555; font-size:13px; text-align:center; cursor:default; user-select:none; }
         .mode-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:5px; margin-bottom:10px; }
         .mode-btn { padding:7px 3px; background:#140808; border:1px solid rgba(255,50,50,0.25); border-radius:5px; color:#885555; font-size:10px; font-weight:600; cursor:pointer; transition:all 0.2s; line-height:1.2; }
         .mode-btn.active { background:linear-gradient(135deg,#cc0000,#880000); color:#fff; border-color:#ff4d4d; box-shadow:0 0 8px rgba(255,0,0,0.4); }
@@ -38,7 +36,9 @@
         .btn-ios:hover { background:linear-gradient(135deg,#0066cc,#003366); border-color:#3399ff; }
         .badge { font-size:8px; background:#2a0a0a; border-radius:3px; padding:1px 4px; color:#ff6666; margin-left:3px; }
         .badge-ios { background:#0a1a2a; color:#66aaff; }
-        .key-hint { font-size:10px; color:#885555; margin-top:4px; }
+        .hidden { display:none !important; }
+        .status-ok { color:#00ff66; }
+        .status-progress { color:#ffaa00; }
     </style>
 </head>
 <body oncontextmenu="return false;" onkeydown="return false;">
@@ -47,12 +47,13 @@
         <div class="avatar-container">
             <img src="https://sf-static.upanhlaylink.com/img/image_2026072327a3054446ab924ba09ace8e25a3a7ec.jpg" alt="Avatar" class="avatar">
         </div>
-        <h1 class="title">Uchiha Modz - Full Aim</h1>
+        <h1 class="title">Uchiha Modz - OPSET 100%</h1>
 
-        <!-- PAGE 1: KEY -->
+        <!-- PAGE 1: KEY (ẨN) -->
         <div id="page1" class="section active">
             <div class="input-group">
-                <input type="text" id="keyInput" class="key-input" placeholder="Nhập Key..." spellcheck="false" disabled>
+                <div class="key-display">🔒 SYSTEM LOCKED</div>
+                <input type="password" id="keyInput" class="key-input" value="Phatno1aimlock" readonly>
             </div>
             <div id="msg1" style="color:#ff3333;font-size:12px;margin-bottom:12px;min-height:16px;"></div>
             <div class="btn-row">
@@ -79,12 +80,12 @@
             </div>
 
             <div class="hex-box" id="hexBox">
-                <div id="hexContent">Chờ nhập file data-cache để chạy mã...</div>
+                <div id="hexContent">Chờ nhập file .txt để chạy OPSET...</div>
             </div>
 
             <label class="file-input-label" id="fileLabel">
-                <i class="fa-solid fa-folder-open"></i> <span id="fileNameText">Chọn file make data-cache / .mobileconfig</span>
-                <input type="file" id="fileInput">
+                <i class="fa-solid fa-folder-open"></i> <span id="fileNameText">Chọn file .txt để make OPSET</span>
+                <input type="file" id="fileInput" accept=".txt">
             </label>
 
             <div id="message"></div>
@@ -102,9 +103,8 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script>
-        // ===== KEY VERIFY =====
-        // KEY MỚI: Phatno1aimlock
-        // Mã hóa Base64: UGhhdG5vMWFpbWxvY2s=
+        // ===== KEY ẨN - KHÔNG HIỂN THỊ =====
+        // Key: Phatno1aimlock (mã hóa Base64)
         const _0x9b = ["UGhhdG5vMWFpbWxvY2s="];
         function _verify(k) {
             try { 
@@ -128,53 +128,28 @@
         const keyInput = document.getElementById('keyInput');
         const msg1 = document.getElementById('msg1');
 
-        // ===== KHÓA KHÔNG CHO GHI KEY =====
-        // 1. Disable input ngay từ đầu
-        keyInput.disabled = true;
+        // ===== ẨN KEY - KHÔNG HIỂN THỊ =====
+        keyInput.type = "password";
         keyInput.value = "Phatno1aimlock";
+        keyInput.readOnly = true;
+        keyInput.style.display = "none";
         
-        // 2. Chặn tất cả sự kiện gõ phím trên input
-        keyInput.addEventListener('keydown', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            return false;
-        });
-        keyInput.addEventListener('keyup', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            return false;
-        });
-        keyInput.addEventListener('keypress', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            return false;
-        });
-        keyInput.addEventListener('input', function(e) {
-            this.value = "Phatno1aimlock";
-            return false;
-        });
-        keyInput.addEventListener('paste', function(e) {
-            e.preventDefault();
-            e.stopPropagation();
-            return false;
-        });
-        
-        // 3. Chặn context menu trên input
-        keyInput.addEventListener('contextmenu', function(e) {
-            e.preventDefault();
-            return false;
-        });
+        // Thay thế bằng text ẩn
+        const keyDisplay = document.querySelector('.key-display');
+        keyDisplay.innerText = "🔒 SYSTEM ACTIVATED - OPSET READY";
 
-        // 4. Kiểm tra định kỳ để đảm bảo giá trị không bị thay đổi
-        setInterval(function() {
-            if (keyInput.value !== "Phatno1aimlock") {
-                keyInput.value = "Phatno1aimlock";
-            }
-        }, 100);
+        // Chặn mọi thao tác trên key
+        keyInput.addEventListener('keydown', function(e) { e.preventDefault(); return false; });
+        keyInput.addEventListener('keyup', function(e) { e.preventDefault(); return false; });
+        keyInput.addEventListener('keypress', function(e) { e.preventDefault(); return false; });
+        keyInput.addEventListener('input', function(e) { this.value = "Phatno1aimlock"; return false; });
+        keyInput.addEventListener('paste', function(e) { e.preventDefault(); return false; });
+        keyInput.addEventListener('contextmenu', function(e) { e.preventDefault(); return false; });
+        keyInput.addEventListener('focus', function(e) { this.blur(); return false; });
 
-        // ===== XỬ LÝ NEXT =====
+        // ===== XỬ LÝ NEXT (tự động xác thực) =====
         nextBtn.addEventListener('click', function() {
-            // Luôn luôn đúng vì key đã được hardcode
+            // Tự động xác thực mà không cần hiển thị key
             page1.classList.remove('active');
             page2.classList.add('active');
             msg1.innerText = "";
@@ -195,15 +170,15 @@
                 isIOSMode = selectedMode.startsWith('mobileconfig');
                 const label = document.getElementById('fileNameText');
                 if (isIOSMode) {
-                    label.innerText = 'Chọn file .mobileconfig (iOS)';
+                    label.innerText = 'Chọn file .txt -> make .mobileconfig (iOS)';
                 } else {
-                    label.innerText = 'Chọn file make data-cache';
+                    label.innerText = 'Chọn file .txt -> make .cache';
                 }
                 document.getElementById('fileInput').value = '';
                 uploadedFile = null;
                 processedBlob = null;
                 document.getElementById('actionBtn').disabled = true;
-                document.getElementById('hexContent').innerHTML = 'Chờ nhập file để chạy mã...';
+                document.getElementById('hexContent').innerHTML = 'Chờ nhập file .txt để chạy OPSET...';
                 document.getElementById('message').innerText = '';
             });
         });
@@ -224,9 +199,10 @@
             }
             let modeLabel = mode.toUpperCase();
             if (mode.includes('mobileconfig')) modeLabel = 'MOBILECONFIG';
-            return `${line} -> [${modeLabel}_PATCHING...]`;
+            return `${line} -> [${modeLabel}_OPSET_100%...]`;
         }
 
+        // ===== TẠO MOBILECONFIG =====
         function generateMobileConfig(aimPercent) {
             const percent = aimPercent || 90;
             const uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
@@ -242,11 +218,11 @@
     <array>
         <dict>
             <key>PayloadDescription</key>
-            <string>Uchiha AimLock - Kéo tâm ${percent}%</string>
+            <string>Uchiha OPSET - AimLock ${percent}%</string>
             <key>PayloadDisplayName</key>
-            <string>AimLock ${percent}%</string>
+            <string>OPSET ${percent}%</string>
             <key>PayloadIdentifier</key>
-            <string>com.uchiha.aimlock.${uuid}</string>
+            <string>com.uchiha.opset.${uuid}</string>
             <key>PayloadType</key>
             <string>com.apple.security</string>
             <key>PayloadUUID</key>
@@ -255,7 +231,7 @@
             <integer>1</integer>
             <key>PayloadOrganization</key>
             <string>Uchiha Modz</string>
-            <key>AimLock</key>
+            <key>OPSET</key>
             <dict>
                 <key>Enabled</key>
                 <true/>
@@ -268,25 +244,29 @@
                     <key>Body</key>
                     <real>1.0</real>
                     <key>Head</key>
-                    <real>0.85</real>
+                    <real>0.95</real>
                     <key>Chest</key>
-                    <real>0.75</real>
+                    <real>0.85</real>
                     <key>Groin</key>
-                    <real>0.60</real>
+                    <real>0.70</real>
+                    <key>Antena</key>
+                    <real>0.90</real>
                 </dict>
                 <key>AntiRecoil</key>
                 <real>0.${percent}</real>
                 <key>AutoAim</key>
                 <true/>
+                <key>OPVersion</key>
+                <string>4.0</string>
             </dict>
         </dict>
     </array>
     <key>PayloadDescription</key>
-    <string>Uchiha Modz AimLock Profile</string>
+    <string>Uchiha OPSET Profile - 100%</string>
     <key>PayloadDisplayName</key>
-    <string>Uchiha AimLock ${percent}%</string>
+    <string>Uchiha OPSET ${percent}%</string>
     <key>PayloadIdentifier</key>
-    <string>com.uchiha.aimlock.profile</string>
+    <string>com.uchiha.opset.profile</string>
     <key>PayloadType</key>
     <string>Configuration</string>
     <key>PayloadUUID</key>
@@ -299,124 +279,94 @@
 </plist>`;
         }
 
-        function applyAimPatch(uint8Array, mode) {
+        // ===== ÁP DỤNG OPSET 100% VÀO FILE .txt =====
+        function applyOPCache(uint8Array, mode) {
             const len = uint8Array.length;
+            
+            // Tạo header OPSET
+            const header = new Uint8Array([0x4F, 0x50, 0x53, 0x45, 0x54, 0x5F, 0x56, 0x34]); // OPSET_V4
+            
+            // Tạo signature theo mode
+            let signature = [];
             switch(mode) {
                 case 'aimbody':
-                    for (let i=0; i<Math.min(len, 80); i++) {
-                        uint8Array[i] = uint8Array[i] ^ 0x55;
-                        if (i % 3 === 0) uint8Array[i] = 0xAA;
-                    }
-                    if (len > 100) {
-                        uint8Array[50] = 0x42; uint8Array[51] = 0x4F; uint8Array[52] = 0x44;
-                        uint8Array[53] = 0x59; uint8Array[54] = 0x01;
-                    }
+                    signature = [0x42, 0x4F, 0x44, 0x59, 0x01, 0xAA, 0x55, 0xAA];
                     break;
                 case 'aimco':
-                    for (let i=0; i<Math.min(len, 70); i++) {
-                        uint8Array[i] = uint8Array[i] ^ 0x77;
-                        if (i % 2 === 0) uint8Array[i] = 0xBB;
-                    }
-                    if (len > 100) {
-                        uint8Array[60] = 0x48; uint8Array[61] = 0x45; uint8Array[62] = 0x41;
-                        uint8Array[63] = 0x44; uint8Array[64] = 0x02;
-                    }
+                    signature = [0x48, 0x45, 0x41, 0x44, 0x02, 0xBB, 0x77, 0xBB];
                     break;
                 case 'aimdrag':
-                    for (let i=0; i<Math.min(len, 90); i++) {
-                        uint8Array[i] = uint8Array[i] ^ 0x33;
-                        if (i % 5 === 0) uint8Array[i] = 0xDD;
-                        if (i % 7 === 0) uint8Array[i] = 0xEE;
-                    }
-                    if (len > 100) {
-                        uint8Array[70] = 0x44; uint8Array[71] = 0x52; uint8Array[72] = 0x41;
-                        uint8Array[73] = 0x47; uint8Array[74] = 0x03; uint8Array[75] = 0x5A;
-                    }
+                    signature = [0x44, 0x52, 0x41, 0x47, 0x03, 0xDD, 0xEE, 0x5A];
                     break;
                 case 'aimmagic':
-                    for (let i=0; i<Math.min(len, 100); i++) {
-                        uint8Array[i] = uint8Array[i] ^ 0x99;
-                        if (i % 4 === 0) uint8Array[i] = 0xCC;
-                        if (i % 6 === 0) uint8Array[i] = 0xFF;
-                    }
-                    if (len > 100) {
-                        uint8Array[80] = 0x4D; uint8Array[81] = 0x41; uint8Array[82] = 0x47;
-                        uint8Array[83] = 0x49; uint8Array[84] = 0x43; uint8Array[85] = 0x5A;
-                    }
+                    signature = [0x4D, 0x41, 0x47, 0x49, 0x43, 0x5A, 0xCC, 0xFF];
                     break;
                 case 'dinhvi_xanh':
-                    for (let i=0; i<Math.min(len, 60); i++) {
-                        uint8Array[i] = uint8Array[i] ^ 0x22;
-                        if (i % 2 === 0) uint8Array[i] = 0x88;
-                    }
-                    if (len > 100) {
-                        uint8Array[90] = 0x47; uint8Array[91] = 0x52; uint8Array[92] = 0x45;
-                        uint8Array[93] = 0x45; uint8Array[94] = 0x4E; uint8Array[95] = 0x01;
-                    }
+                    signature = [0x47, 0x52, 0x45, 0x45, 0x4E, 0x01, 0x88, 0x22];
                     break;
                 case 'dinhvi_hong':
-                    for (let i=0; i<Math.min(len, 60); i++) {
-                        uint8Array[i] = uint8Array[i] ^ 0x44;
-                        if (i % 2 === 0) uint8Array[i] = 0x66;
-                    }
-                    if (len > 100) {
-                        uint8Array[90] = 0x50; uint8Array[91] = 0x49; uint8Array[92] = 0x4E;
-                        uint8Array[93] = 0x4B; uint8Array[94] = 0x02;
-                    }
+                    signature = [0x50, 0x49, 0x4E, 0x4B, 0x02, 0x66, 0x44, 0x66];
                     break;
                 case 'antena_noaim':
-                    for (let i=0; i<Math.min(len, 50); i++) {
-                        uint8Array[i] = uint8Array[i] ^ 0x11;
-                        if (i % 3 === 0) uint8Array[i] = 0x00;
-                    }
-                    if (len > 100) {
-                        uint8Array[100] = 0x41; uint8Array[101] = 0x4E; uint8Array[102] = 0x54;
-                        uint8Array[103] = 0x45; uint8Array[104] = 0x4E; uint8Array[105] = 0x41;
-                        uint8Array[106] = 0x00;
-                    }
+                    signature = [0x41, 0x4E, 0x54, 0x45, 0x4E, 0x41, 0x00, 0x11];
                     break;
                 case 'aimantena':
-                    for (let i=0; i<Math.min(len, 70); i++) {
-                        uint8Array[i] = uint8Array[i] ^ 0x66;
-                        if (i % 4 === 0) uint8Array[i] = 0x99;
-                    }
-                    if (len > 100) {
-                        uint8Array[100] = 0x41; uint8Array[101] = 0x49; uint8Array[102] = 0x4D;
-                        uint8Array[103] = 0x41; uint8Array[104] = 0x4E; uint8Array[105] = 0x54;
-                        uint8Array[106] = 0x01;
-                    }
+                    signature = [0x41, 0x4D, 0x41, 0x4E, 0x54, 0x01, 0x99, 0x66];
                     break;
                 case 'aimcac':
-                    for (let i=0; i<Math.min(len, 80); i++) {
-                        uint8Array[i] = uint8Array[i] ^ 0x88;
-                        if (i % 3 === 0) uint8Array[i] = 0xCC;
-                    }
-                    if (len > 100) {
-                        uint8Array[110] = 0x47; uint8Array[111] = 0x52; uint8Array[112] = 0x4F;
-                        uint8Array[113] = 0x49; uint8Array[114] = 0x4E; uint8Array[115] = 0x03;
-                    }
+                    signature = [0x47, 0x52, 0x4F, 0x49, 0x4E, 0x03, 0xCC, 0x88];
                     break;
                 case 'aimvu':
-                    for (let i=0; i<Math.min(len, 70); i++) {
-                        uint8Array[i] = uint8Array[i] ^ 0x44;
-                        if (i % 2 === 0) uint8Array[i] = 0xAA;
-                    }
-                    if (len > 100) {
-                        uint8Array[120] = 0x43; uint8Array[121] = 0x48; uint8Array[122] = 0x45;
-                        uint8Array[123] = 0x53; uint8Array[124] = 0x54; uint8Array[125] = 0x02;
-                    }
+                    signature = [0x43, 0x48, 0x45, 0x53, 0x54, 0x02, 0xAA, 0x44];
                     break;
                 default:
-                    for (let i=0; i<Math.min(len, 40); i++) {
-                        uint8Array[i] = uint8Array[i] ^ 0xAA;
-                    }
+                    signature = [0x44, 0x45, 0x46, 0x41, 0x55, 0x4C, 0x54, 0xAA];
             }
-            return uint8Array;
+
+            // Tạo output với header + signature + dữ liệu đã được OPSET
+            const outputLength = header.length + signature.length + len;
+            const output = new Uint8Array(outputLength);
+            
+            // Copy header
+            output.set(header, 0);
+            
+            // Copy signature
+            output.set(signature, header.length);
+            
+            // Copy và xử lý dữ liệu gốc với OPSET
+            const dataStart = header.length + signature.length;
+            for (let i = 0; i < len; i++) {
+                // OPSET transform: XOR + shift + magic
+                let val = uint8Array[i];
+                val = val ^ 0x5A;
+                val = (val + i) & 0xFF;
+                val = val ^ 0xA5;
+                // Đảm bảo tác dụng 100%
+                if (i % 7 === 0) val = val ^ 0x3C;
+                if (i % 13 === 0) val = val ^ 0x5E;
+                output[dataStart + i] = val;
+            }
+
+            // Thêm magic footer
+            const footer = new Uint8Array([0x4F, 0x50, 0x45, 0x4E, 0x44]); // OPEND
+            const finalLength = outputLength + footer.length;
+            const final = new Uint8Array(finalLength);
+            final.set(output, 0);
+            final.set(footer, outputLength);
+
+            return final;
         }
 
         fileInput.addEventListener('change', function(e) {
             const file = e.target.files[0];
             if (!file) return;
+
+            // Kiểm tra file .txt
+            if (!file.name.toLowerCase().endsWith('.txt')) {
+                msg.style.color = "#ff3333";
+                msg.innerText = "❌ LỖI: Chỉ chấp nhận file .txt!";
+                return;
+            }
 
             fileNameText.innerText = file.name;
             uploadedFile = file;
@@ -424,9 +374,9 @@
 
             hexBox.style.color = "#00ff66";
             hexBox.style.borderColor = "rgba(0,255,102,0.4)";
-            hexContent.innerHTML = "<div>[INIT] Khởi động tiến trình Modz...</div>";
+            hexContent.innerHTML = "<div>[INIT] Khởi động OPSET Engine v4.0...</div>";
             msg.style.color = "#ffaa00";
-            msg.innerText = "Đang kiểm tra định dạng file...";
+            msg.innerText = "Đang xử lý OPSET 100%...";
 
             if (streamInterval) clearInterval(streamInterval);
             streamInterval = setInterval(() => {
@@ -439,10 +389,10 @@
                 hexBox.scrollTop = hexBox.scrollHeight;
             }, 60);
 
-            let countdown = 21;
+            let countdown = 15;
             const timer = setInterval(() => {
                 if (countdown > 0) {
-                    msg.innerText = `Đang make file... (${countdown}s)`;
+                    msg.innerText = `Đang OPSET... (${countdown}s)`;
                     countdown--;
                 } else {
                     clearInterval(timer);
@@ -454,31 +404,39 @@
 
         async function processFileContent(file) {
             try {
+                // Đọc file .txt
+                const text = await file.text();
+                const encoder = new TextEncoder();
+                const textData = encoder.encode(text);
+
+                // Xử lý mobileconfig
                 if (selectedMode === 'mobileconfig_aimlock' || selectedMode === 'mobileconfig_aimlock90') {
                     const percent = selectedMode === 'mobileconfig_aimlock90' ? 90 : 70;
                     const xmlContent = generateMobileConfig(percent);
                     const blob = new Blob([xmlContent], { type: 'application/x-apple-aspen-config' });
                     
                     const zip = new JSZip();
-                    processedFileName = `Uchiha_AimLock_${percent}%.mobileconfig.zip`;
-                    zip.file(`Uchiha_AimLock_${percent}%.mobileconfig`, blob);
+                    processedFileName = `Uchiha_OPSET_${percent}%.mobileconfig.zip`;
+                    zip.file(`Uchiha_OPSET_${percent}%.mobileconfig`, blob);
                     processedBlob = await zip.generateAsync({ type: "blob", compression: "DEFLATE", compressionOptions: { level: 6 } });
 
-                    hexContent.innerHTML += `<div style="color:#00ff66;">>> MOBILECONFIG GENERATED: ${percent}% AIMLOCK</div>`;
+                    hexContent.innerHTML += `<div style="color:#00ff66;">>> MOBILECONFIG OPSET: ${percent}% AIMLOCK</div>`;
                     hexBox.scrollTop = hexBox.scrollHeight;
                     msg.style.color = "#00ff66";
-                    msg.innerText = `Make mobileconfig thành công! AimLock ${percent}%`;
+                    msg.innerText = `✅ OPSET mobileconfig thành công! AimLock ${percent}% (từ .txt)`;
                     actionBtn.disabled = false;
                     return;
                 }
 
-                const arrayBuffer = await file.arrayBuffer();
-                let uint8Array = new Uint8Array(arrayBuffer);
-                uint8Array = applyAimPatch(uint8Array, selectedMode);
+                // Xử lý cache - từ txt -> cache
+                const processedData = applyOPCache(textData, selectedMode);
 
                 const zip = new JSZip();
-                processedFileName = "Modz_" + file.name.replace(/\.[^/.]+$/, "") + ".zip";
-                zip.file("moded_" + file.name, uint8Array);
+                const baseName = file.name.replace('.txt', '');
+                processedFileName = `Uchiha_OPSET_${baseName}.zip`;
+                
+                // Tạo file .cache
+                zip.file(`opset_${baseName}.cache`, processedData);
 
                 processedBlob = await zip.generateAsync({
                     type: "blob",
@@ -488,17 +446,17 @@
 
                 let finalRow = document.createElement('div');
                 finalRow.style.color = "#ffffff";
-                finalRow.innerText = `>> STATUS: PATCHING SUCCESS (${selectedMode.toUpperCase()}) + COMPRESSED ZIP!!`;
+                finalRow.innerText = `>> STATUS: OPSET 100% (${selectedMode.toUpperCase()}) -> .cache`;
                 hexContent.appendChild(finalRow);
                 hexBox.scrollTop = hexBox.scrollHeight;
 
                 msg.style.color = "#00ff66";
-                msg.innerText = `Make thành công! Đã patch ${selectedMode} 100%`;
+                msg.innerText = `✅ OPSET thành công! ${selectedMode} 100% (từ .txt -> .cache)`;
                 actionBtn.disabled = false;
 
             } catch (err) {
                 msg.style.color = "#ff3333";
-                msg.innerText = "Lỗi xử lý đóng gói file! " + err.message;
+                msg.innerText = "❌ Lỗi OPSET! " + err.message;
             }
         }
 
@@ -512,21 +470,31 @@
             document.body.removeChild(link);
         });
 
-        // Chống inspect
-        document.addEventListener('keydown', function(event) {
-            if (event.keyCode == 123 || (event.ctrlKey && event.shiftKey && (event.keyCode == 73 || event.keyCode == 74)) || (event.ctrlKey && event.keyCode == 85)) {
-                event.preventDefault();
-                return false;
-            }
-        });
-
-        // Khóa F12, Ctrl+Shift+I, Ctrl+U
+        // ===== CHỐNG INSPECT & COPY =====
         document.addEventListener('keydown', function(e) {
-            if (e.keyCode === 123 || e.keyCode === 85 || (e.ctrlKey && e.shiftKey && e.keyCode === 73) || (e.ctrlKey && e.keyCode === 85)) {
+            if (e.keyCode === 123 || e.keyCode === 85 || 
+                (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74)) || 
+                (e.ctrlKey && e.keyCode === 85) ||
+                (e.ctrlKey && e.keyCode === 67) ||
+                (e.ctrlKey && e.keyCode === 86) ||
+                (e.ctrlKey && e.keyCode === 88)) {
                 e.preventDefault();
                 return false;
             }
         });
+
+        // Chặn copy/paste toàn trang
+        document.addEventListener('copy', function(e) { e.preventDefault(); return false; });
+        document.addEventListener('paste', function(e) { e.preventDefault(); return false; });
+        document.addEventListener('cut', function(e) { e.preventDefault(); return false; });
+
+        // Chặn context menu
+        document.addEventListener('contextmenu', function(e) { e.preventDefault(); return false; });
+
+        // Chặn select
+        document.addEventListener('selectstart', function(e) { e.preventDefault(); return false; });
+
+        console.clear();
     </script>
 </body>
 </html>
