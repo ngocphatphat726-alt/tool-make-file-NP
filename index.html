@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <title>Tool Gen Cache + AIMLOCK + MobileConfig</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; font-family: -apple-system, sans-serif; }
+        body { background:#F8F9FA; color:#212529; min-height:100vh; padding:0 12px 80px; }
+        header { background:linear-gradient(135deg, #0D6EFD, #1E90FF); padding:20px 16px; text-align:center; margin:0 -12px 16px; box-shadow:0 4px 12px rgba(13,110,253,0.2); }
+        header h1 { color:white; font-size:24px; font-weight:700; letter-spacing:0.5px; text-shadow:0 1px 4px rgba(0,0,0,0.1); }
+        header small { color:rgba(255,255,255,0.85); font-size:15px; display:block; margin-top:4px; font-weight:400; }
+        .container { max-width:900px; margin:0 auto; }
+        .stats { background:#E3F2FD; border-radius:14px; padding:14px 18px; display:flex; flex-wrap:wrap; gap:8px 20px; font-size:15px; border:1px solid #BBDEFB; margin-bottom:16px; color:#0D47A1; }
+        .stats span { color:#0D6EFD; font-weight:700; }
+        .form-group { background:white; border-radius:14px; padding:16px; border:1px solid #DEE2E6; margin-bottom:16px; display:flex; flex-wrap:wrap; gap:12px; }
+        .form-group input, .form-group textarea { flex:1; min-width:200px; padding:12px 16px; border:2px solid #DEE2E6; border-radius:12px; font-size:16px; outline:none; transition:0.2s; }
+        .form-group input:focus, .form-group textarea:focus { border-color:#0D6EFD; box-shadow:0 0 0 3px rgba(13,110,253,0.15); }
+        .form-group textarea { resize:vertical; min-height:50px; }
+        .toolbar { display:flex; flex-wrap:wrap; gap:10px; margin-bottom:16px; }
+        .toolbar select, .toolbar button { padding:10px 20px; border:none; border-radius:30px; font-size:15px; font-weight:600; background:white; color:#0D6EFD; border:2px solid #0D6EFD; cursor:pointer; transition:0.15s; }
+        .toolbar button { background:#0D6EFD; color:white; border-color:#0D6EFD; }
+        .toolbar button:active { transform:scale(0.96); }
+        .toolbar .clear-btn { background:#DC3545; border-color:#DC3545; color:white; }
+        .search-box { width:100%; padding:14px 18px; border-radius:30px; border:2px solid #DEE2E6; background:white; font-size:16px; margin-bottom:16px; outline:none; transition:0.2s; }
+        .search-box:focus { border-color:#0D6EFD; box-shadow:0 0 0 3px rgba(13,110,253,0.1); }
+        .file-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(170px,1fr)); gap:12px; margin-bottom:20px; }
+        .file-card { background:white; border:1px solid #DEE2E6; border-radius:14px; padding:14px; display:flex; align-items:center; gap:12px; cursor:pointer; transition:0.15s; box-shadow:0 2px 4px rgba(0,0,0,0.02); }
+        .file-card:active { background:#F1F3F5; transform:scale(0.98); }
+        .file-card input[type="checkbox"] { width:20px; height:20px; accent-color:#0D6EFD; cursor:pointer; flex-shrink:0; }
+        .file-card .info { flex:1; overflow:hidden; }
+        .file-card .info .name { font-size:15px; font-weight:500; color:#212529; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+        .file-card .info .size { font-size:13px; color:#6C757D; }
+        .file-card .icon { font-size:24px; }
+        .file-card.selected { border-color:#0D6EFD; background:#E8F0FE; box-shadow:0 0 0 2px rgba(13,110,253,0.15); }
+        .action-buttons { display:flex; gap:14px; margin-top:8px; }
+        .action-buttons button { flex:1; padding:18px; font-size:20px; font-weight:700; border:none; border-radius:40px; background:#0D6EFD; color:white; box-shadow:0 4px 14px rgba(13,110,253,0.25); cursor:pointer; transition:0.15s; }
+        .action-buttons button:active { transform:scale(0.97); }
+        .action-buttons .download { background:#198754; box-shadow:0 4px 14px rgba(25,135,84,0.25); }
+        .action-buttons button:disabled { opacity:0.5; transform:none; }
+        .toast { position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:#212529; color:white; padding:14px 28px; border-radius:40px; font-size:16px; opacity:0; transition:0.4s; pointer-events:none; z-index:999; white-space:nowrap; box-shadow:0 4px 16px rgba(0,0,0,0.15); }
+        .toast.success { background:#198754; }
+        .toast.error { background:#DC3545; }
+        .toast.show { opacity:1; pointer-events:auto; bottom:30px; }
+        .history { margin-top:20px; background:white; border-radius:14px; padding:14px; border:1px solid #DEE2E6; }
+        .history h3 { font-size:15px; color:#495057; margin-bottom:10px; }
+        .history-item { display:flex; justify-content:space-between; font-size:14px; padding:8px 0; border-bottom:1px solid #F1F3F5; color:#495057; }
+        .history-item:last-child { border-bottom:none; }
+        .group-badge { display:inline-block; font-size:11px; padding:2px 10px; border-radius:30px; background:#E3F2FD; color:#0D6EFD; margin-left:6px; font-weight:600; }
+        @media (max-width:500px) { header h1 { font-size:20px; } .file-grid { grid-template-columns:1fr 1fr; } .stats { font-size:13px; } .form-group input, .form-group textarea { min-width:100%; } }
+    </style>
+</head>
+<body>
+<header><h1>⚡ DEV TRANDUC ⚡</h1><small>Tool Gen Cache + AIMLOCK + MobileConfig</small></header>
+<div class="container">
+    <div class="stats" id="stats">📁 Tổng: <span id="totalFiles">0</span> 📦 Dung lượng: <span id="totalSize">0</span> KB ⏱️ Thời gian: <span id="genTime">0</span> ms 🧩 Đã chọn: <span id="selectedCount">0</span></div>
+    
+    <div class="form-group">
+        <input type="text" id="mcName" placeholder="📛 Tên MobileConfig (VD: Wifi Config)" value="MyConfig">
+        <textarea id="mcDesc" placeholder="📝 Mô tả MobileConfig (VD: Cấu hình WiFi tự động)">Auto-generated config</textarea>
+    </div>
+
+    <div class="toolbar">
+        <select id="groupSelect"><option value="all">▶️ Chọn nhóm</option><option value="cache_adr">📱 Cache Android</option><option value="cache_ios">🍎 Cache iOS</option><option value="aimlock_ios">🎯 Aimlock iOS</option><option value="mobileconfig_ios">⚙️ MobileConfig iOS</option></select>
+        <button onclick="selectGroup()">Áp dụng</button>
+        <button onclick="selectAll()">✅ Chọn tất cả</button>
+        <button class="clear-btn" onclick="clearAll()">🗑️ Bỏ chọn</button>
+    </div>
+    <input class="search-box" id="searchInput" placeholder="🔍 Tìm file..." oninput="filterFiles(this.value)">
+    <div class="file-grid" id="fileGrid"></div>
+    <div class="action-buttons">
+        <button class="generate" onclick="generateZip()">⚡ Tạo ZIP</button>
+        <button class="download" id="downloadBtn" onclick="downloadZip()" disabled>📥 Tải ZIP</button>
+    </div>
+    <div class="history" id="historyBox"><h3>📜 Lịch sử xuất</h3><div id="historyList"></div></div>
+</div>
+<div class="toast" id="toast"></div>
+<script>
+// ===== DANH SÁCH FILE =====
+const fileList = [
+    // Cache Android
+    { id:'game_cache_v1', name:'game_cache_v1', ext:'.cache', size:12, icon:'📱', group:'cache_adr' },
+    { id:'graphics_cache', name:'graphics_cache', ext:'.cache', size:8, icon:'🎨', group:'cache_adr' },
+    { id:'audio_cache', name:'audio_cache', ext:'.cache', size:6, icon:'🔊', group:'cache_adr' },
+    { id:'data_cache', name:'data_cache', ext:'.cache', size:10, icon:'💾', group:'cache_adr' },
+    { id:'config_cache', name:'config_cache', ext:'.cache', size:4, icon:'⚙️', group:'cache_adr' },
+    { id:'resource_cache', name:'resource_cache', ext:'.cache', size:7, icon:'📦', group:'cache_adr' },
+    { id:'network_cache', name:'network_cache', ext:'.cache', size:5, icon:'🌐', group:'cache_adr' },
+    // Cache iOS
+    { id:'ios_app_cache', name:'ios_app_cache', ext:'.cache', size:11, icon:'🍎', group:'cache_ios' },
+    { id:'ios_system_cache', name:'ios_system_cache', ext:'.cache', size:9, icon:'⚡', group:'cache_ios' },
+    { id:'ios_ui_cache', name:'ios_ui_cache', ext:'.cache', size:7, icon:'🖥️', group:'cache_ios' },
+    { id:'ios_asset_cache', name:'ios_asset_cache', ext:'.cache', size:13, icon:'🖼️', group:'cache_ios' },
+    { id:'ios_database_cache', name:'ios_database_cache', ext:'.cache', size:15, icon:'🗄️', group:'cache_ios' },
+    // Aimlock iOS
+    { id:'aimlock_head', name:'aimlock_head', ext:'.aimlock', size:5, icon:'🎯', group:'aimlock_ios' },
+    { id:'aimlock_body', name:'aimlock_body', ext:'.aimlock', size:5, icon:'🎯', group:'aimlock_ios' },
+    { id:'aimlock_auto', name:'aimlock_auto', ext:'.aimlock', size:6, icon:'🤖', group:'aimlock_ios' },
+    { id:'aimlock_smooth', name:'aimlock_smooth', ext:'.aimlock', size:4, icon:'🧈', group:'aimlock_ios' },
+    { id:'aimlock_priority', name:'aimlock_priority', ext:'.aimlock', size:5, icon:'⭐', group:'aimlock_ios' },
+    // MobileConfig iOS
+    { id:'wifi_config', name:'wifi_config', ext:'.mobileconfig', size:8, icon:'📶', group:'mobileconfig_ios' },
+    { id:'vpn_config', name:'vpn_config', ext:'.mobileconfig', size:10, icon:'🔒', group:'mobileconfig_ios' },
+    { id:'proxy_config', name:'proxy_config', ext:'.mobileconfig', size:9, icon:'🔄', group:'mobileconfig_ios' },
+    { id:'cert_config', name:'cert_config', ext:'.mobileconfig', size:11, icon:'📜', group:'mobileconfig_ios' },
+    { id:'dns_config', name:'dns_config', ext:'.mobileconfig', size:7, icon:'🌍', group:'mobileconfig_ios' },
+    { id:'apn_config', name:'apn_config', ext:'.mobileconfig', size:8, icon:'📡', group:'mobileconfig_ios' },
+    { id:'security_config', name:'security_config', ext:'.mobileconfig', size:12, icon:'🛡️', group:'mobileconfig_ios' }
+];
+let selected = new Set();
+let filtered = [...fileList];
+let zipBlob = null;
+
+// ===== RENDER =====
+function render() {
+    const grid = document.getElementById('fileGrid');
+    grid.innerHTML = '';
+    filtered.forEach(f => {
+        const checked = selected.has(f.id);
+        const card = document.createElement('div');
+        card.className = `file-card${checked?' selected':''}`;
+        const groupLabel = { cache_adr:'ADR', cache_ios:'iOS', aimlock_ios:'AIM', mobileconfig_ios:'MC' }[f.group] || '';
+        card.innerHTML = `
+            <input type="checkbox" ${checked?'checked':''}>
+            <span class="icon">${f.icon}</span>
+            <div class="info">
+                <div class="name">${f.name}${f.ext} <span class="group-badge">${groupLabel}</span></div>
+                <div class="size">${f.size} KB</div>
+            </div>
+        `;
+        const cb = card.querySelector('input');
+        cb.addEventListener('change', () => {
+            if (cb.checked) selected.add(f.id); else selected.delete(f.id);
+            card.classList.toggle('selected', cb.checked);
+            updateStats();
+        });
+        card.addEventListener('click', (e) => {
+            if (e.target.tagName !== 'INPUT') { cb.checked = !cb.checked; cb.dispatchEvent(new Event('change')); }
+        });
+        grid.appendChild(card);
+    });
+    updateStats();
+}
+function filterFiles(keyword) {
+    const k = keyword.toLowerCase().trim();
+    filtered = fileList.filter(f => f.name.includes(k) || f.ext.includes(k));
+    render();
+}
+function updateStats() {
+    let totalSize = 0;
+    selected.forEach(id => {
+        const f = fileList.find(x => x.id === id);
+        if (f) totalSize += f.size;
+    });
+    document.getElementById('totalFiles').textContent = fileList.length;
+    document.getElementById('totalSize').textContent = totalSize;
+    document.getElementById('selectedCount').textContent = selected.size;
+}
+function selectAll() { fileList.forEach(f => selected.add(f.id)); render(); }
+function clearAll() { selected.clear(); render(); }
+
+// ===== CHỌN NHÓM =====
+function selectGroup() {
+    const group = document.getElementById('groupSelect').value;
+    if (group === 'all') {
+        selectAll();
+    } else {
+        selected.clear();
+        fileList.forEach(f => { if (f.group === group) selected.add(f.id); });
+        render();
+    }
+}
+
+// ===== TẠO NỘI DUNG FILE =====
+function getFileContent(id, mcName, mcDesc) {
+    const f = fileList.find(x => x.id === id);
+    if (!f) return '-- Error';
+    let content = '';
+    switch(f.group) {
+        case 'cache_adr':
+        case 'cache_ios':
+            content = `CACHE_DATA\nKey: ${f.name}\nValue: placeholder_${Date.now()}\nSize: ${f.size}KB\nType: ${f.group}\nTimestamp: ${new Date().toISOString()}\n---END CACHE---`;
+            break;
+        case 'aimlock_ios':
+            content = `-- AIMLOCK iOS\n-- File: ${f.name}${f.ext}\n-- Version: 2.0.1\nfunction OnAimlock()\n    local config = {\n        enabled = true,\n        target = "${f.id.includes('head')?'head':f.id.includes('body')?'body':'auto'}",\n        smooth = ${f.id.includes('smooth')?'0.8':'0.3'},\n        priority = ${f.id.includes('priority')?'2':'1'}\n    }\n    return config\nend`;
+            break;
+        case 'mobileconfig_ios':
+            content = generateMobileConfig(f.id, mcName || 'MyConfig', mcDesc || 'Auto-generated');
+            break;
+        default: content = `-- Unknown type for ${f.name}`;
+    }
+    return content;
+}
+
+function generateMobileConfig(type, name, desc) {
+    const uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+        const r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
+        return v.toString(16);
+    });
+    const payloads = {
+        'wifi_config': `<key>SSID</key><string>MyWiFi</string><key>EncryptionType</key><string>WPA2</string><key>Password</key><string>Pass1234</string>`,
+        'vpn_config': `<key>VPNType</key><string>L2TP</string><key>Server</key><string>vpn.server.com</string><key>Account</key><string>user</string><key>Password</key><string>pass</string>`,
+        'proxy_config': `<key>ProxyType</key><string>Manual</string><key>ProxyServer</key><string>proxy:8080</string><key>ProxyPACURL</key><string>http://pac.example.com</string>`,
+        'cert_config': `<key>PayloadContent</key><data>MIIC...certDataBase64...</data>`,
+        'dns_config': `<key>DNSSettings</key><dict><key>DNSAddresses</key><array><string>8.8.8.8</string><string>1.1.1.1</string></array></dict>`,
+        'apn_config': `<key>APN</key><string>internet</string><key>Username</key><string>apnuser</string><key>Password</key><string>apnpass</string>`,
+        'security_config': `<key>SecuritySettings</key><dict><key>AllowUntrusted</key><false/><key>RequireSecure</key><true/></dict>`
+    };
+    const payload = payloads[type] || '<key>Placeholder</key><string>config</string>';
+    return `<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>PayloadType</key><string>Configuration</string>
+    <key>PayloadVersion</key><integer>1</integer>
+    <key>PayloadDisplayName</key><string>${name}</string>
+    <key>PayloadDescription</key><string>${desc}</string>
+    <key>PayloadIdentifier</key><string>com.dev.tranduc.${type}</string>
+    <key>PayloadUUID</key><string>${uuid}</string>
+    <key>PayloadContent</key>
+    <dict>${payload}</dict>
+</dict>
+</plist>`;
+}
+
+// ===== GENERATE ZIP =====
+async function generateZip() {
+    if (selected.size === 0) { showToast('❌ Chọn ít nhất 1 file!', 'error'); return; }
+    const start = performance.now();
+    const btn = document.querySelector('.generate');
+    const mcName = document.getElementById('mcName').value.trim() || 'MyConfig';
+    const mcDesc = document.getElementById('mcDesc').value.trim() || 'Auto-generated';
+    btn.textContent = '⏳ Đang tạo...';
+    btn.disabled = true;
+    try {
+        const zip = new JSZip();
+        const folders = {
+            'cache_adr': 'Cache_Android',
+            'cache_ios': 'Cache_iOS',
+            'aimlock_ios': 'Aimlock_iOS',
+            'mobileconfig_ios': 'MobileConfig_iOS'
+        };
+        for (const id of selected) {
+            const f = fileList.find(x => x.id === id);
+            if (!f) continue;
+            const content = getFileContent(id, mcName, mcDesc);
+            const folderName = folders[f.group] || 'Others';
+            zip.file(`${folderName}/${f.name}${f.ext}`, content);
+        }
+        zip.file('README.txt', `Tool Gen Cache + AIMLOCK + MobileConfig\nGenerated by DEV_TRANDUC\nTên MobileConfig: ${mcName}\nMô tả: ${mcDesc}\nCấu trúc thư mục:\n- Cache_Android: file .cache\n- Cache_iOS: file .cache\n- Aimlock_iOS: file .aimlock\n- MobileConfig_iOS: file .mobileconfig`);
+        zipBlob = await zip.generateAsync({ type: 'blob', compression: 'DEFLATE', compressionOptions: { level: 6 } });
+        const end = performance.now();
+        document.getElementById('genTime').textContent = Math.round(end - start);
+        document.getElementById('downloadBtn').disabled = false;
+        showToast(`✅ Tạo thành công! ${selected.size} files, ${(zipBlob.size/1024).toFixed(1)} KB`, 'success');
+        saveHistory(`${selected.size} files, ${(zipBlob.size/1024).toFixed(1)} KB - ${mcName}`);
+    } catch (err) {
+        showToast('❌ Lỗi: ' + err.message, 'error');
+    } finally {
+        btn.textContent = '⚡ Tạo ZIP';
+        btn.disabled = false;
+    }
+}
+
+// ===== DOWNLOAD ZIP =====
+function downloadZip() {
+    if (!zipBlob) { showToast('❌ Chưa tạo file!', 'error'); return; }
+    const url = URL.createObjectURL(zipBlob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `CACHE_AIM_MC_${Date.now()}.zip`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    setTimeout(() => URL.revokeObjectURL(url), 5000);
+    showToast('📥 Đang tải...', 'success');
+}
+
+// ===== TOAST =====
+function showToast(msg, type='') {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = 'toast ' + type + ' show';
+    clearTimeout(t._timer);
+    t._timer = setTimeout(() => t.classList.remove('show'), 3000);
+}
+
+// ===== HISTORY =====
+function saveHistory(text) {
+    let h = JSON.parse(localStorage.getItem('cacheHistory') || '[]');
+    h.unshift({ text, time: new Date().toLocaleString() });
+    if (h.length > 10) h.pop();
+    localStorage.setItem('cacheHistory', JSON.stringify(h));
+    renderHistory();
+}
+function renderHistory() {
+    const container = document.getElementById('historyList');
+    const h = JSON.parse(localStorage.getItem('cacheHistory') || '[]');
+    if (h.length === 0) { container.innerHTML = '<div style="color:#ADB5BD;padding:8px;">Chưa có lịch sử</div>'; return; }
+    container.innerHTML = h.map(item => `<div class="history-item"><span>📦 ${item.text}</span><span>${item.time}</span></div>`).join('');
+}
+render();
+renderHistory();
+</script>
+</body>
+</html>
