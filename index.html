@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Uchiha Modz - OPSET 100%</title>
+    <title>Uchiha OPSET - FF 100%</title>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         * { margin:0; padding:0; box-sizing:border-box; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif; }
@@ -12,7 +14,7 @@
         .card { position:relative; z-index:1; background:rgba(18,10,10,0.85); border:1px solid rgba(255,50,50,0.3); border-radius:20px; padding:25px 20px; width:100%; max-width:480px; text-align:center; box-shadow:0 0 25px rgba(255,0,0,0.15); backdrop-filter:blur(10px); }
         .avatar-container { width:90px; height:90px; margin:0 auto 15px; border-radius:50%; overflow:hidden; border:2px solid #ff3333; box-shadow:0 0 12px rgba(255,0,0,0.4); display:flex; justify-content:center; align-items:center; background-color:#000; }
         .avatar { width:100%; height:100%; object-fit:cover; object-position:center; }
-        .title { font-size:18px; font-weight:700; margin-bottom:15px; color:#fff; text-shadow:0 0 8px rgba(255,0,0,0.5); }
+        .title { font-size:18px; font-weight:700; margin-bottom:12px; color:#fff; text-shadow:0 0 8px rgba(255,0,0,0.5); }
         .section { display:none; }
         .section.active { display:block; }
         .input-group { margin-bottom:12px; position:relative; }
@@ -21,16 +23,6 @@
         .ip-display { width:100%; padding:8px 14px; background-color:#0a0303; border:1px solid rgba(0,255,100,0.2); border-radius:8px; color:#00ff66; font-size:11px; text-align:center; cursor:default; user-select:none; margin-bottom:6px; font-family:monospace; }
         .ip-display.locked { border-color:rgba(255,50,50,0.4); color:#ff3333; }
         .ip-display.unlocked { border-color:rgba(0,255,100,0.4); color:#00ff66; }
-        .ip-list { width:100%; padding:6px 10px; background-color:#0a0303; border:1px solid rgba(255,100,100,0.15); border-radius:6px; color:#885555; font-size:10px; text-align:left; font-family:monospace; max-height:60px; overflow-y:auto; margin-bottom:8px; }
-        .ip-list::-webkit-scrollbar { width:3px; }
-        .ip-list::-webkit-scrollbar-track { background:#0a0303; }
-        .ip-list::-webkit-scrollbar-thumb { background:#ff3333; border-radius:3px; }
-        .ip-item { display:flex; justify-content:space-between; align-items:center; padding:2px 4px; border-bottom:1px solid rgba(255,50,50,0.05); }
-        .ip-item .ip-text { color:#ff6666; }
-        .ip-item .ip-badge { font-size:8px; background:#2a0a0a; padding:0 4px; border-radius:3px; color:#ff6666; }
-        .ip-item .ip-badge.default { background:#0a2a0a; color:#66ff66; }
-        .ip-item .ip-del { color:#ff3333; cursor:pointer; font-size:10px; padding:0 4px; }
-        .ip-item .ip-del:hover { color:#ff0000; }
         .mode-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:5px; margin-bottom:10px; }
         .mode-btn { padding:7px 3px; background:#140808; border:1px solid rgba(255,50,50,0.25); border-radius:5px; color:#885555; font-size:10px; font-weight:600; cursor:pointer; transition:all 0.2s; line-height:1.2; }
         .mode-btn.active { background:linear-gradient(135deg,#cc0000,#880000); color:#fff; border-color:#ff4d4d; box-shadow:0 0 8px rgba(255,0,0,0.4); }
@@ -47,27 +39,20 @@
         .btn { flex:1; min-width:80px; display:flex; align-items:center; justify-content:center; gap:6px; padding:10px 8px; border-radius:10px; font-size:12px; font-weight:600; text-decoration:none; color:#fff; background:linear-gradient(135deg,#2b0808,#1a0505); border:1px solid rgba(255,50,50,0.4); transition:all 0.2s; cursor:pointer; }
         .btn:hover { background:linear-gradient(135deg,#cc0000,#880000); border-color:#ff4d4d; box-shadow:0 0 12px rgba(255,0,0,0.4); }
         .btn:disabled { opacity:0.5; cursor:not-allowed; }
-        .btn-ios { border-color:rgba(0,150,255,0.4); }
-        .btn-ios:hover { background:linear-gradient(135deg,#0066cc,#003366); border-color:#3399ff; }
-        .btn-vip { border-color:rgba(255,200,0,0.4); }
-        .btn-vip:hover { background:linear-gradient(135deg,#cc8800,#886600); border-color:#ffcc00; }
         .badge { font-size:8px; background:#2a0a0a; border-radius:3px; padding:1px 4px; color:#ff6666; margin-left:3px; }
         .badge-ios { background:#0a1a2a; color:#66aaff; }
-        .badge-vip { background:#2a2a0a; color:#ffcc00; }
+        .badge-firebase { background:#1a2a0a; color:#66ff88; }
         .hidden { display:none !important; }
-        .status-ok { color:#00ff66; }
-        .status-progress { color:#ffaa00; }
-        .status-error { color:#ff3333; }
         .overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:9999; display:flex; justify-content:center; align-items:center; flex-direction:column; }
         .overlay h1 { color:#ff3333; font-size:24px; margin-bottom:20px; text-shadow:0 0 20px rgba(255,0,0,0.5); }
         .overlay p { color:#885555; font-size:14px; }
         .overlay .ip { color:#ff6666; font-family:monospace; font-size:18px; margin-top:10px; }
-        .vip-input-row { display:flex; gap:6px; margin-bottom:8px; }
-        .vip-input-row input { flex:1; padding:6px 10px; background:#140808; border:1px solid rgba(255,200,0,0.3); border-radius:6px; color:#fff; font-size:11px; outline:none; font-family:monospace; }
-        .vip-input-row input:focus { border-color:#ffcc00; box-shadow:0 0 8px rgba(255,200,0,0.2); }
-        .vip-input-row .btn-vip-small { padding:6px 12px; background:linear-gradient(135deg,#2a2a0a,#1a1a05); border:1px solid rgba(255,200,0,0.4); border-radius:6px; color:#ffcc00; font-size:11px; cursor:pointer; transition:all 0.2s; }
-        .vip-input-row .btn-vip-small:hover { background:linear-gradient(135deg,#cc8800,#886600); border-color:#ffcc00; color:#fff; }
-        .vip-input-row .btn-vip-small:disabled { opacity:0.3; cursor:not-allowed; }
+        .status-firebase { font-size:9px; padding:2px 8px; border-radius:10px; display:inline-block; margin-bottom:6px; }
+        .status-firebase.connected { background:rgba(0,255,100,0.15); color:#00ff66; border:1px solid #00ff66; }
+        .status-firebase.disconnected { background:rgba(255,50,50,0.15); color:#ff3333; border:1px solid #ff3333; }
+        .status-firebase.loading { background:rgba(255,200,0,0.15); color:#ffcc00; border:1px solid #ffcc00; }
+        .firebase-badge { font-size:8px; background:#0a1a2a; color:#66aaff; padding:1px 6px; border-radius:4px; margin-left:4px; border:1px solid rgba(0,150,255,0.2); }
+        .ip-hint { font-size:9px; color:#555; margin-top:4px; padding:4px 8px; background:rgba(0,0,0,0.3); border-radius:4px; display:inline-block; }
     </style>
 </head>
 <body oncontextmenu="return false;" onkeydown="return false;">
@@ -76,8 +61,9 @@
         <h1>⛔ TRUY CẬP BỊ TỪ CHỐI</h1>
         <p>IP của bạn không nằm trong danh sách cho phép</p>
         <div class="ip" id="currentIpDisplay">Đang kiểm tra...</div>
-        <p style="margin-top:20px;font-size:12px;color:#555;">Danh sách IP cho phép:</p>
+        <p style="margin-top:20px;font-size:12px;color:#555;">Danh sách IP cho phép (Firebase):</p>
         <div id="overlayIpList" style="color:#ff6666;font-family:monospace;font-size:14px;margin-top:5px;"></div>
+        <p style="margin-top:15px;font-size:11px;color:#555;">Liên hệ Admin để được thêm IP</p>
     </div>
 
     <div class="bg-glow"></div>
@@ -85,21 +71,15 @@
         <div class="avatar-container">
             <img src="https://sf-static.upanhlaylink.com/img/image_2026072327a3054446ab924ba09ace8e25a3a7ec.jpg" alt="Avatar" class="avatar">
         </div>
-        <h1 class="title">Uchiha Modz - OPSET 100%</h1>
+        <h1 class="title">Uchiha OPSET - NP🪽</h1>
+
+        <!-- Firebase Status -->
+        <div style="margin-bottom:6px;">
+            <span id="firebaseStatus" class="status-firebase loading">⏳ Đang kết nối Firebase...</span>
+        </div>
 
         <!-- IP STATUS -->
         <div class="ip-display" id="ipStatus">🔍 Đang kiểm tra IP...</div>
-
-        <!-- DANH SÁCH IP VIP -->
-        <div class="ip-list" id="ipList">
-            <div style="color:#555;font-size:9px;text-align:center;padding:2px;">-- Danh sách IP cho phép --</div>
-        </div>
-
-        <!-- THÊM IP VIP -->
-        <div class="vip-input-row">
-            <input type="text" id="vipIpInput" placeholder="Nhập IP VIP (vd: 192.168.1.1)" spellcheck="false">
-            <button class="btn-vip-small" id="addVipBtn"><i class="fa-solid fa-plus"></i> Thêm</button>
-        </div>
 
         <!-- PAGE 1: KEY (ẨN) -->
         <div id="page1" class="section active">
@@ -155,36 +135,29 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script>
-        // ===== IP LIST =====
-        // IP mặc định: 14.191.53.226
-        let allowedIPs = ['14.191.53.226'];
+        // ===== FIREBASE CONFIG (từ file key.html) =====
+        const firebaseConfig = {
+            apiKey: "AIzaSyCGkhT2kvWVPMiMrsADX04tyZSj6ueRHtg",
+            authDomain: "yamate-efab6.firebaseapp.com",
+            databaseURL: "https://yamate-efab6-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "yamate-efab6",
+            storageBucket: "yamate-efab6.firebasestorage.app",
+            messagingSenderId: "352037727100",
+            appId: "1:352037727100:web:abe3e49eb1f7555e9392f9"
+        };
+
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const db = firebase.database();
+
+        // ===== STATE =====
+        let allowedIPs = [];
         let isIpValid = false;
         let ipCheckInterval = null;
         let isLoggedIn = false;
-
-        // Lưu vào localStorage để duy trì
-        function loadIPs() {
-            try {
-                const saved = localStorage.getItem('uchiha_allowed_ips');
-                if (saved) {
-                    const parsed = JSON.parse(saved);
-                    if (Array.isArray(parsed) && parsed.length > 0) {
-                        // Đảm bảo IP mặc định luôn có
-                        if (!parsed.includes('14.191.53.226')) {
-                            parsed.unshift('14.191.53.226');
-                        }
-                        allowedIPs = parsed;
-                    }
-                }
-            } catch(e) {}
-            saveIPs();
-        }
-
-        function saveIPs() {
-            try {
-                localStorage.setItem('uchiha_allowed_ips', JSON.stringify(allowedIPs));
-            } catch(e) {}
-        }
+        let isFirebaseReady = false;
+        let currentIP = null;
 
         // ===== KEY ẨN =====
         const _0x9b = ["UGhhdG5vMWFpbWxvY2s="];
@@ -218,100 +191,45 @@
             }
         }
 
-        // ===== CẬP NHẬT DANH SÁCH IP =====
-        function updateIPListDisplay() {
-            const listEl = document.getElementById('ipList');
-            const overlayList = document.getElementById('overlayIpList');
-            
-            let html = '<div style="color:#555;font-size:9px;text-align:center;padding:2px;">-- Danh sách IP cho phép --</div>';
-            allowedIPs.forEach((ip, index) => {
-                const isDefault = ip === '14.191.53.226';
-                html += `<div class="ip-item">
-                    <span class="ip-text">${ip}</span>
-                    <span>
-                        ${isDefault ? '<span class="ip-badge default">MẶC ĐỊNH</span>' : `<span class="ip-del" data-index="${index}"><i class="fa-solid fa-trash-can"></i></span>`}
-                    </span>
-                </div>`;
-            });
-            listEl.innerHTML = html;
+        // ===== LOAD IP TỪ FIREBASE =====
+        function loadIPsFromFirebase() {
+            const statusEl = document.getElementById('firebaseStatus');
+            statusEl.className = 'status-firebase loading';
+            statusEl.textContent = '⏳ Đang tải IP Whitelist...';
 
-            // Overlay
-            overlayList.innerHTML = allowedIPs.map(ip => `<div style="color:#ff6666;">${ip}</div>`).join('');
-
-            // Gán sự kiện xóa
-            document.querySelectorAll('.ip-del').forEach(el => {
-                el.addEventListener('click', function(e) {
-                    const idx = parseInt(this.getAttribute('data-index'));
-                    if (!isNaN(idx) && idx >= 0 && idx < allowedIPs.length) {
-                        const ip = allowedIPs[idx];
-                        if (ip === '14.191.53.226') {
-                            document.getElementById('message').innerText = '❌ Không thể xóa IP mặc định!';
-                            document.getElementById('message').style.color = '#ff3333';
-                            return;
-                        }
-                        allowedIPs.splice(idx, 1);
-                        saveIPs();
-                        updateIPListDisplay();
-                        // Kiểm tra lại IP hiện tại
-                        checkIP();
-                        document.getElementById('message').innerText = `✅ Đã xóa IP: ${ip}`;
-                        document.getElementById('message').style.color = '#00ff66';
-                    }
-                });
+            db.ref('whitelist/ips').on('value', (snapshot) => {
+                const data = snapshot.val();
+                if (data && Array.isArray(data)) {
+                    allowedIPs = data;
+                } else {
+                    allowedIPs = [];
+                }
+                isFirebaseReady = true;
+                statusEl.className = 'status-firebase connected';
+                statusEl.textContent = `✅ Firebase Connected (${allowedIPs.length} IPs)`;
+                updateOverlayList();
+                checkIP();
+            }, (error) => {
+                statusEl.className = 'status-firebase disconnected';
+                statusEl.textContent = '❌ Firebase Error: ' + error.message;
+                isFirebaseReady = false;
+                console.error('Firebase error:', error);
             });
         }
 
-        // ===== THÊM IP VIP =====
-        document.getElementById('addVipBtn').addEventListener('click', function() {
-            const input = document.getElementById('vipIpInput');
-            const ip = input.value.trim();
-            
-            // Validate IP đơn giản
-            const ipPattern = /^(\d{1,3}\.){3}\d{1,3}$/;
-            if (!ipPattern.test(ip)) {
-                document.getElementById('message').innerText = '❌ IP không hợp lệ! Định dạng: xxx.xxx.xxx.xxx';
-                document.getElementById('message').style.color = '#ff3333';
-                return;
+        // ===== CẬP NHẬT DANH SÁCH IP TRÊN OVERLAY =====
+        function updateOverlayList() {
+            const overlayList = document.getElementById('overlayIpList');
+            if (!allowedIPs || allowedIPs.length === 0) {
+                overlayList.innerHTML = '<div style="color:#666;">Chưa có IP nào được thêm</div>';
+            } else {
+                overlayList.innerHTML = allowedIPs.map(ip => `<div style="color:#ff6666;">${ip}</div>`).join('');
             }
-            
-            // Kiểm tra từng phần tử
-            const parts = ip.split('.');
-            for (let p of parts) {
-                const num = parseInt(p);
-                if (num < 0 || num > 255) {
-                    document.getElementById('message').innerText = '❌ IP không hợp lệ! Giá trị 0-255';
-                    document.getElementById('message').style.color = '#ff3333';
-                    return;
-                }
-            }
-
-            if (allowedIPs.includes(ip)) {
-                document.getElementById('message').innerText = `⚠️ IP ${ip} đã tồn tại!`;
-                document.getElementById('message').style.color = '#ffaa00';
-                return;
-            }
-
-            allowedIPs.push(ip);
-            saveIPs();
-            updateIPListDisplay();
-            input.value = '';
-            document.getElementById('message').innerText = `✅ Đã thêm IP VIP: ${ip}`;
-            document.getElementById('message').style.color = '#00ff66';
-            
-            // Kiểm tra lại IP hiện tại
-            checkIP();
-        });
-
-        // Enter để thêm IP
-        document.getElementById('vipIpInput').addEventListener('keydown', function(e) {
-            if (e.key === 'Enter') {
-                document.getElementById('addVipBtn').click();
-            }
-        });
+        }
 
         // ===== KIỂM TRA IP =====
         async function checkIP() {
-            const currentIP = await getCurrentIP();
+            currentIP = await getCurrentIP();
             const ipStatus = document.getElementById('ipStatus');
             const overlay = document.getElementById('ipOverlay');
             const currentIpDisplay = document.getElementById('currentIpDisplay');
@@ -322,13 +240,11 @@
                 currentIpDisplay.innerText = 'Không thể lấy IP';
             }
 
-            // Cập nhật overlay list
-            const overlayList = document.getElementById('overlayIpList');
-            overlayList.innerHTML = allowedIPs.map(ip => `<div style="color:#ff6666;">${ip}</div>`).join('');
+            updateOverlayList();
 
             const isAllowed = allowedIPs.includes(currentIP);
 
-            if (isAllowed && currentIP) {
+            if (isAllowed && currentIP && isFirebaseReady) {
                 isIpValid = true;
                 ipStatus.className = 'ip-display unlocked';
                 ipStatus.innerText = `✅ IP: ${currentIP} - ĐÃ XÁC THỰC`;
@@ -362,7 +278,7 @@
 
         // ===== ENABLE/DISABLE CONTROLS =====
         function enableControls(enable) {
-            const btns = document.querySelectorAll('.mode-btn, #nextBtn, #backBtn, #actionBtn, .file-input-label, #zaloBtn, #addVipBtn');
+            const btns = document.querySelectorAll('.mode-btn, #nextBtn, #backBtn, #actionBtn, .file-input-label, #zaloBtn');
             btns.forEach(btn => {
                 btn.disabled = !enable;
                 btn.style.opacity = enable ? '1' : '0.3';
@@ -370,21 +286,17 @@
             });
             const fileInput = document.getElementById('fileInput');
             fileInput.disabled = !enable;
-            const vipInput = document.getElementById('vipIpInput');
-            vipInput.disabled = !enable;
-            vipInput.style.opacity = enable ? '1' : '0.3';
         }
 
         // ===== START IP CHECK =====
         async function startIPCheck() {
-            loadIPs();
-            updateIPListDisplay();
+            loadIPsFromFirebase();
             await checkIP();
             if (ipCheckInterval) clearInterval(ipCheckInterval);
             ipCheckInterval = setInterval(checkIP, 5000);
         }
 
-        // ===== STATE =====
+        // ===== STATE UI =====
         let selectedMode = "aimbody";
         let uploadedFile = null;
         let processedBlob = null;
@@ -448,7 +360,7 @@
                 if (isIOSMode) {
                     label.innerText = 'Chọn file .txt -> make .mobileconfig (iOS)';
                 } else {
-                    label.innerText = 'Chọn file .txt -> make .cache';
+                    label.innerText = 'Chọn file .txt -> make .cache (FF 100%)';
                 }
                 document.getElementById('fileInput').value = '';
                 uploadedFile = null;
@@ -475,7 +387,7 @@
             }
             let modeLabel = mode.toUpperCase();
             if (mode.includes('mobileconfig')) modeLabel = 'MOBILECONFIG';
-            return `${line} -> [${modeLabel}_OPSET_100%...]`;
+            return `${line} -> [${modeLabel}_OPSET_FF_100%...]`;
         }
 
         function generateMobileConfig(aimPercent) {
@@ -493,9 +405,9 @@
     <array>
         <dict>
             <key>PayloadDescription</key>
-            <string>Uchiha OPSET - AimLock ${percent}%</string>
+            <string>Uchiha OPSET - FreeFire AimLock ${percent}%</string>
             <key>PayloadDisplayName</key>
-            <string>OPSET ${percent}%</string>
+            <string>FF OPSET ${percent}%</string>
             <key>PayloadIdentifier</key>
             <string>com.uchiha.opset.${uuid}</string>
             <key>PayloadType</key>
@@ -506,7 +418,7 @@
             <integer>1</integer>
             <key>PayloadOrganization</key>
             <string>Uchiha Modz</string>
-            <key>OPSET</key>
+            <key>OPSET_FF</key>
             <dict>
                 <key>Enabled</key>
                 <true/>
@@ -514,34 +426,38 @@
                 <real>${percent / 100}</real>
                 <key>AimDrag</key>
                 <real>0.${percent}</real>
-                <key>Targeting</key>
+                <key>AimMagic</key>
+                <real>0.${percent}</real>
+                <key>Targeting_FF</key>
                 <dict>
                     <key>Body</key>
                     <real>1.0</real>
                     <key>Head</key>
-                    <real>0.95</real>
+                    <real>0.98</real>
                     <key>Chest</key>
-                    <real>0.85</real>
+                    <real>0.92</real>
                     <key>Groin</key>
-                    <real>0.70</real>
+                    <real>0.80</real>
                     <key>Antena</key>
-                    <real>0.90</real>
+                    <real>0.95</real>
                 </dict>
-                <key>AntiRecoil</key>
+                <key>AntiRecoil_FF</key>
                 <real>0.${percent}</real>
-                <key>AutoAim</key>
+                <key>AutoAim_FF</key>
                 <true/>
                 <key>OPVersion</key>
-                <string>6.0</string>
+                <string>8.0_FF</string>
+                <key>GameID</key>
+                <string>com.dts.freefireth</string>
             </dict>
         </dict>
     </array>
     <key>PayloadDescription</key>
-    <string>Uchiha OPSET Profile - 100%</string>
+    <string>Uchiha OPSET FreeFire Profile - 100%</string>
     <key>PayloadDisplayName</key>
-    <string>Uchiha OPSET ${percent}%</string>
+    <string>Uchiha FF OPSET ${percent}%</string>
     <key>PayloadIdentifier</key>
-    <string>com.uchiha.opset.profile</string>
+    <string>com.uchiha.opset.ff.profile</string>
     <key>PayloadType</key>
     <string>Configuration</string>
     <key>PayloadUUID</key>
@@ -556,21 +472,21 @@
 
         function applyOPCache(uint8Array, mode) {
             const len = uint8Array.length;
-            const header = new Uint8Array([0x4F, 0x50, 0x53, 0x45, 0x54, 0x5F, 0x56, 0x36]); // OPSET_V6
+            const header = new Uint8Array([0x4F, 0x50, 0x53, 0x45, 0x54, 0x5F, 0x46, 0x46]); // OPSET_FF
             
             let signature = [];
             switch(mode) {
-                case 'aimbody': signature = [0x42, 0x4F, 0x44, 0x59, 0x01, 0xAA, 0x55, 0xAA]; break;
-                case 'aimco': signature = [0x48, 0x45, 0x41, 0x44, 0x02, 0xBB, 0x77, 0xBB]; break;
-                case 'aimdrag': signature = [0x44, 0x52, 0x41, 0x47, 0x03, 0xDD, 0xEE, 0x5A]; break;
-                case 'aimmagic': signature = [0x4D, 0x41, 0x47, 0x49, 0x43, 0x5A, 0xCC, 0xFF]; break;
-                case 'dinhvi_xanh': signature = [0x47, 0x52, 0x45, 0x45, 0x4E, 0x01, 0x88, 0x22]; break;
-                case 'dinhvi_hong': signature = [0x50, 0x49, 0x4E, 0x4B, 0x02, 0x66, 0x44, 0x66]; break;
-                case 'antena_noaim': signature = [0x41, 0x4E, 0x54, 0x45, 0x4E, 0x41, 0x00, 0x11]; break;
-                case 'aimantena': signature = [0x41, 0x4D, 0x41, 0x4E, 0x54, 0x01, 0x99, 0x66]; break;
-                case 'aimcac': signature = [0x47, 0x52, 0x4F, 0x49, 0x4E, 0x03, 0xCC, 0x88]; break;
-                case 'aimvu': signature = [0x43, 0x48, 0x45, 0x53, 0x54, 0x02, 0xAA, 0x44]; break;
-                default: signature = [0x44, 0x45, 0x46, 0x41, 0x55, 0x4C, 0x54, 0xAA];
+                case 'aimbody': signature = [0x42, 0x4F, 0x44, 0x59, 0x01, 0xAA, 0x55, 0xAA, 0x46, 0x46]; break;
+                case 'aimco': signature = [0x48, 0x45, 0x41, 0x44, 0x02, 0xBB, 0x77, 0xBB, 0x46, 0x46]; break;
+                case 'aimdrag': signature = [0x44, 0x52, 0x41, 0x47, 0x03, 0xDD, 0xEE, 0x5A, 0x46, 0x46]; break;
+                case 'aimmagic': signature = [0x4D, 0x41, 0x47, 0x49, 0x43, 0x5A, 0xCC, 0xFF, 0x46, 0x46]; break;
+                case 'dinhvi_xanh': signature = [0x47, 0x52, 0x45, 0x45, 0x4E, 0x01, 0x88, 0x22, 0x46, 0x46]; break;
+                case 'dinhvi_hong': signature = [0x50, 0x49, 0x4E, 0x4B, 0x02, 0x66, 0x44, 0x66, 0x46, 0x46]; break;
+                case 'antena_noaim': signature = [0x41, 0x4E, 0x54, 0x45, 0x4E, 0x41, 0x00, 0x11, 0x46, 0x46]; break;
+                case 'aimantena': signature = [0x41, 0x4D, 0x41, 0x4E, 0x54, 0x01, 0x99, 0x66, 0x46, 0x46]; break;
+                case 'aimcac': signature = [0x47, 0x52, 0x4F, 0x49, 0x4E, 0x03, 0xCC, 0x88, 0x46, 0x46]; break;
+                case 'aimvu': signature = [0x43, 0x48, 0x45, 0x53, 0x54, 0x02, 0xAA, 0x44, 0x46, 0x46]; break;
+                default: signature = [0x44, 0x45, 0x46, 0x41, 0x55, 0x4C, 0x54, 0xAA, 0x46, 0x46];
             }
 
             const outputLength = header.length + signature.length + len;
@@ -582,14 +498,15 @@
             for (let i = 0; i < len; i++) {
                 let val = uint8Array[i];
                 val = val ^ 0x5A;
-                val = (val + i) & 0xFF;
+                val = (val + i * 2) & 0xFF;
                 val = val ^ 0xA5;
                 if (i % 7 === 0) val = val ^ 0x3C;
                 if (i % 13 === 0) val = val ^ 0x5E;
+                if (i % 17 === 0) val = val ^ 0x77;
                 output[dataStart + i] = val;
             }
 
-            const footer = new Uint8Array([0x4F, 0x50, 0x45, 0x4E, 0x44]); // OPEND
+            const footer = new Uint8Array([0x4F, 0x50, 0x45, 0x4E, 0x44, 0x46, 0x46]); // OPENDFF
             const finalLength = outputLength + footer.length;
             const final = new Uint8Array(finalLength);
             final.set(output, 0);
@@ -620,9 +537,9 @@
 
             hexBox.style.color = "#00ff66";
             hexBox.style.borderColor = "rgba(0,255,102,0.4)";
-            hexContent.innerHTML = "<div>[INIT] Khởi động OPSET Engine v6.0...</div>";
+            hexContent.innerHTML = "<div>[INIT] Khởi động OPSET FF Engine v8.0...</div>";
             msg.style.color = "#ffaa00";
-            msg.innerText = "Đang xử lý OPSET 100%...";
+            msg.innerText = "Đang xử lý OPSET 100% FreeFire...";
 
             if (streamInterval) clearInterval(streamInterval);
             streamInterval = setInterval(() => {
@@ -638,7 +555,7 @@
             let countdown = 15;
             const timer = setInterval(() => {
                 if (countdown > 0) {
-                    msg.innerText = `Đang OPSET... (${countdown}s)`;
+                    msg.innerText = `Đang OPSET FF... (${countdown}s)`;
                     countdown--;
                 } else {
                     clearInterval(timer);
@@ -660,14 +577,14 @@
                     const blob = new Blob([xmlContent], { type: 'application/x-apple-aspen-config' });
                     
                     const zip = new JSZip();
-                    processedFileName = `Uchiha_OPSET_${percent}%.mobileconfig.zip`;
-                    zip.file(`Uchiha_OPSET_${percent}%.mobileconfig`, blob);
+                    processedFileName = `Uchiha_FF_OPSET_${percent}%.mobileconfig.zip`;
+                    zip.file(`Uchiha_FF_OPSET_${percent}%.mobileconfig`, blob);
                     processedBlob = await zip.generateAsync({ type: "blob", compression: "DEFLATE", compressionOptions: { level: 6 } });
 
-                    hexContent.innerHTML += `<div style="color:#00ff66;">>> MOBILECONFIG OPSET: ${percent}% AIMLOCK</div>`;
+                    hexContent.innerHTML += `<div style="color:#00ff66;">>> MOBILECONFIG OPSET FF: ${percent}% AIMLOCK</div>`;
                     hexBox.scrollTop = hexBox.scrollHeight;
                     msg.style.color = "#00ff66";
-                    msg.innerText = `✅ OPSET mobileconfig thành công! AimLock ${percent}% (từ .txt)`;
+                    msg.innerText = `✅ OPSET mobileconfig FF thành công! AimLock ${percent}% (từ .txt)`;
                     actionBtn.disabled = false;
                     return;
                 }
@@ -676,8 +593,8 @@
 
                 const zip = new JSZip();
                 const baseName = file.name.replace('.txt', '');
-                processedFileName = `Uchiha_OPSET_${baseName}.zip`;
-                zip.file(`opset_${baseName}.cache`, processedData);
+                processedFileName = `Uchiha_FF_OPSET_${baseName}.zip`;
+                zip.file(`opset_ff_${baseName}.cache`, processedData);
 
                 processedBlob = await zip.generateAsync({
                     type: "blob",
@@ -687,12 +604,12 @@
 
                 let finalRow = document.createElement('div');
                 finalRow.style.color = "#ffffff";
-                finalRow.innerText = `>> STATUS: OPSET 100% (${selectedMode.toUpperCase()}) -> .cache`;
+                finalRow.innerText = `>> STATUS: OPSET FF 100% (${selectedMode.toUpperCase()}) -> .cache`;
                 hexContent.appendChild(finalRow);
                 hexBox.scrollTop = hexBox.scrollHeight;
 
                 msg.style.color = "#00ff66";
-                msg.innerText = `✅ OPSET thành công! ${selectedMode} 100% (từ .txt -> .cache)`;
+                msg.innerText = `✅ OPSET FF thành công! ${selectedMode} 100% (từ .txt -> .cache)`;
                 actionBtn.disabled = false;
 
             } catch (err) {
@@ -732,6 +649,10 @@
 
         // ===== KHỞI ĐỘNG =====
         console.clear();
+        console.log('🔥 Uchiha OPSET FF v8.0');
+        console.log('📌 Firebase Realtime DB - Read Only');
+        console.log('💡 Admin quản lý IP qua app Admin riêng');
+        console.log('📋 Path: whitelist/ips');
         startIPCheck();
     </script>
 </body>
