@@ -18,14 +18,19 @@
         .input-group { margin-bottom:12px; position:relative; }
         .key-input { width:100%; padding:12px 14px; background-color:#140808; border:1px solid rgba(255,50,50,0.4); border-radius:10px; color:#fff; font-size:13px; outline:none; text-align:center; transition:all 0.3s; display:none; }
         .key-display { width:100%; padding:12px 14px; background-color:#0a0303; border:1px solid rgba(255,50,50,0.2); border-radius:10px; color:#555; font-size:13px; text-align:center; cursor:default; user-select:none; }
+        .ip-display { width:100%; padding:8px 14px; background-color:#0a0303; border:1px solid rgba(0,255,100,0.2); border-radius:8px; color:#00ff66; font-size:11px; text-align:center; cursor:default; user-select:none; margin-bottom:10px; font-family:monospace; }
+        .ip-display.locked { border-color:rgba(255,50,50,0.4); color:#ff3333; }
+        .ip-display.unlocked { border-color:rgba(0,255,100,0.4); color:#00ff66; }
         .mode-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:5px; margin-bottom:10px; }
         .mode-btn { padding:7px 3px; background:#140808; border:1px solid rgba(255,50,50,0.25); border-radius:5px; color:#885555; font-size:10px; font-weight:600; cursor:pointer; transition:all 0.2s; line-height:1.2; }
         .mode-btn.active { background:linear-gradient(135deg,#cc0000,#880000); color:#fff; border-color:#ff4d4d; box-shadow:0 0 8px rgba(255,0,0,0.4); }
         .mode-btn.ios-only { border-color:rgba(0,150,255,0.4); }
         .mode-btn.ios-only.active { background:linear-gradient(135deg,#0066cc,#003366); border-color:#3399ff; box-shadow:0 0 8px rgba(0,100,255,0.4); }
+        .mode-btn:disabled { opacity:0.3; cursor:not-allowed; }
         .hex-box { background:#050202; border:1px solid rgba(255,50,50,0.2); border-radius:8px; padding:10px; margin-bottom:10px; font-family:monospace; font-size:10px; color:#885555; text-align:left; height:90px; overflow-y:hidden; position:relative; box-shadow:inset 0 0 10px rgba(0,0,0,0.8); line-height:1.5; }
         .file-input-label { display:block; padding:12px 14px; background:linear-gradient(135deg,#2b0808,#1a0505); border:1px solid rgba(255,50,50,0.4); border-radius:10px; color:#ffaaaa; font-size:13px; cursor:pointer; margin-bottom:10px; transition:all 0.3s; }
         .file-input-label:hover { border-color:#ff3333; color:#fff; }
+        .file-input-label:disabled { opacity:0.3; cursor:not-allowed; }
         input[type="file"] { display:none; }
         #message { margin-bottom:10px; font-size:12px; font-weight:600; min-height:16px; }
         .btn-row { display:flex; gap:10px; flex-wrap:wrap; }
@@ -39,25 +44,41 @@
         .hidden { display:none !important; }
         .status-ok { color:#00ff66; }
         .status-progress { color:#ffaa00; }
+        .status-error { color:#ff3333; }
+        .overlay { position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.95); z-index:9999; display:flex; justify-content:center; align-items:center; flex-direction:column; }
+        .overlay h1 { color:#ff3333; font-size:24px; margin-bottom:20px; text-shadow:0 0 20px rgba(255,0,0,0.5); }
+        .overlay p { color:#885555; font-size:14px; }
+        .overlay .ip { color:#ff6666; font-family:monospace; font-size:18px; margin-top:10px; }
     </style>
 </head>
 <body oncontextmenu="return false;" onkeydown="return false;">
+    <!-- Overlay khi IP không hợp lệ -->
+    <div id="ipOverlay" class="overlay" style="display:none;">
+        <h1>⛔ TRUY CẬP BỊ TỪ CHỐI</h1>
+        <p>IP của bạn không nằm trong danh sách cho phép</p>
+        <div class="ip" id="currentIpDisplay">Đang kiểm tra...</div>
+        <p style="margin-top:20px;font-size:12px;color:#555;">Chỉ hỗ trợ IP: <span style="color:#ff6666;font-family:monospace;">14.191.53.226</span></p>
+    </div>
+
     <div class="bg-glow"></div>
-    <div class="card">
+    <div class="card" id="mainCard">
         <div class="avatar-container">
             <img src="https://sf-static.upanhlaylink.com/img/image_2026072327a3054446ab924ba09ace8e25a3a7ec.jpg" alt="Avatar" class="avatar">
         </div>
         <h1 class="title">Uchiha Modz - OPSET 100%</h1>
 
+        <!-- IP STATUS -->
+        <div class="ip-display" id="ipStatus">🔍 Đang kiểm tra IP...</div>
+
         <!-- PAGE 1: KEY (ẨN) -->
         <div id="page1" class="section active">
             <div class="input-group">
-                <div class="key-display">🔒 SYSTEM LOCKED</div>
+                <div class="key-display">🔒 SYSTEM LOCKED - IP VERIFIED</div>
                 <input type="password" id="keyInput" class="key-input" value="Phatno1aimlock" readonly>
             </div>
             <div id="msg1" style="color:#ff3333;font-size:12px;margin-bottom:12px;min-height:16px;"></div>
             <div class="btn-row">
-                <a href="https://zalo.me/0939251990" target="_blank" class="btn"><i class="fa-solid fa-comment-dots"></i> Zalo</a>
+                <a href="https://zalo.me/0939251990" target="_blank" class="btn" id="zaloBtn"><i class="fa-solid fa-comment-dots"></i> Zalo</a>
                 <button class="btn" id="nextBtn">Tiếp tục <i class="fa-solid fa-arrow-right"></i></button>
             </div>
         </div>
@@ -103,14 +124,121 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script>
-        // ===== KEY ẨN - KHÔNG HIỂN THỊ =====
-        // Key: Phatno1aimlock (mã hóa Base64)
+        // ===== IP LOCK CONFIG =====
+        const ALLOWED_IP = "14.191.53.226";
+        let isIpValid = false;
+        let ipCheckInterval = null;
+        let isLoggedIn = false;
+
+        // ===== KEY ẨN =====
         const _0x9b = ["UGhhdG5vMWFpbWxvY2s="];
         function _verify(k) {
             try { 
                 let decoded = atob(_0x9b[0]); 
                 return k.trim() === decoded; 
             } catch(e) { return false; }
+        }
+
+        // ===== LẤY IP THỰC TẾ =====
+        async function getCurrentIP() {
+            try {
+                const response = await fetch('https://api.ipify.org?format=json');
+                const data = await response.json();
+                return data.ip;
+            } catch(e) {
+                // Fallback: dùng các service khác
+                try {
+                    const response = await fetch('https://api.my-ip.io/ip.json');
+                    const data = await response.json();
+                    return data.ip;
+                } catch(e2) {
+                    try {
+                        const response = await fetch('https://ipapi.co/ip/');
+                        const ip = await response.text();
+                        return ip.trim();
+                    } catch(e3) {
+                        return null;
+                    }
+                }
+            }
+        }
+
+        // ===== KIỂM TRA IP =====
+        async function checkIP() {
+            const currentIP = await getCurrentIP();
+            const ipStatus = document.getElementById('ipStatus');
+            const overlay = document.getElementById('ipOverlay');
+            const currentIpDisplay = document.getElementById('currentIpDisplay');
+            
+            if (currentIP) {
+                currentIpDisplay.innerText = `IP của bạn: ${currentIP}`;
+            } else {
+                currentIpDisplay.innerText = 'Không thể lấy IP';
+            }
+
+            if (currentIP === ALLOWED_IP) {
+                isIpValid = true;
+                ipStatus.className = 'ip-display unlocked';
+                ipStatus.innerText = `✅ IP: ${currentIP} - ĐÃ XÁC THỰC`;
+                overlay.style.display = 'none';
+                document.getElementById('mainCard').style.display = 'block';
+                enableControls(true);
+                
+                // Nếu chưa đăng nhập thì cho phép
+                if (!isLoggedIn) {
+                    isLoggedIn = true;
+                }
+            } else {
+                isIpValid = false;
+                ipStatus.className = 'ip-display locked';
+                ipStatus.innerText = `❌ IP: ${currentIP || 'Không xác định'} - KHÔNG ĐƯỢC PHÉP`;
+                overlay.style.display = 'flex';
+                document.getElementById('mainCard').style.display = 'none';
+                enableControls(false);
+                
+                // Logout nếu đang login
+                if (isLoggedIn) {
+                    isLoggedIn = false;
+                    // Reset về page 1
+                    document.getElementById('page2').classList.remove('active');
+                    document.getElementById('page1').classList.add('active');
+                    // Reset file
+                    document.getElementById('fileInput').value = '';
+                    document.getElementById('actionBtn').disabled = true;
+                    document.getElementById('hexContent').innerHTML = 'Chờ nhập file .txt để chạy OPSET...';
+                    document.getElementById('message').innerText = '';
+                }
+            }
+        }
+
+        // ===== ENABLE/DISABLE CONTROLS =====
+        function enableControls(enable) {
+            const btns = document.querySelectorAll('.mode-btn, #nextBtn, #backBtn, #actionBtn, .file-input-label, #zaloBtn');
+            btns.forEach(btn => {
+                if (enable) {
+                    btn.disabled = false;
+                    btn.style.opacity = '1';
+                    btn.style.cursor = 'pointer';
+                } else {
+                    btn.disabled = true;
+                    btn.style.opacity = '0.3';
+                    btn.style.cursor = 'not-allowed';
+                }
+            });
+            // Đặc biệt cho file input
+            const fileInput = document.getElementById('fileInput');
+            if (enable) {
+                fileInput.disabled = false;
+            } else {
+                fileInput.disabled = true;
+            }
+        }
+
+        // ===== START IP CHECK =====
+        async function startIPCheck() {
+            await checkIP();
+            if (ipCheckInterval) clearInterval(ipCheckInterval);
+            ipCheckInterval = setInterval(checkIP, 5000); // Check mỗi 5 giây
         }
 
         // ===== STATE =====
@@ -128,17 +256,15 @@
         const keyInput = document.getElementById('keyInput');
         const msg1 = document.getElementById('msg1');
 
-        // ===== ẨN KEY - KHÔNG HIỂN THỊ =====
+        // ===== ẨN KEY =====
         keyInput.type = "password";
         keyInput.value = "Phatno1aimlock";
         keyInput.readOnly = true;
         keyInput.style.display = "none";
         
-        // Thay thế bằng text ẩn
         const keyDisplay = document.querySelector('.key-display');
         keyDisplay.innerText = "🔒 SYSTEM ACTIVATED - OPSET READY";
 
-        // Chặn mọi thao tác trên key
         keyInput.addEventListener('keydown', function(e) { e.preventDefault(); return false; });
         keyInput.addEventListener('keyup', function(e) { e.preventDefault(); return false; });
         keyInput.addEventListener('keypress', function(e) { e.preventDefault(); return false; });
@@ -147,9 +273,15 @@
         keyInput.addEventListener('contextmenu', function(e) { e.preventDefault(); return false; });
         keyInput.addEventListener('focus', function(e) { this.blur(); return false; });
 
-        // ===== XỬ LÝ NEXT (tự động xác thực) =====
+        // ===== XỬ LÝ NEXT =====
         nextBtn.addEventListener('click', function() {
-            // Tự động xác thực mà không cần hiển thị key
+            if (!isIpValid) {
+                msg1.innerText = "❌ IP không hợp lệ!";
+                return;
+            }
+            if (!isLoggedIn) {
+                isLoggedIn = true;
+            }
             page1.classList.remove('active');
             page2.classList.add('active');
             msg1.innerText = "";
@@ -164,6 +296,7 @@
         const modeButtons = document.querySelectorAll('.mode-btn');
         modeButtons.forEach(btn => {
             btn.addEventListener('click', function() {
+                if (!isIpValid) return;
                 modeButtons.forEach(b => b.classList.remove('active'));
                 this.classList.add('active');
                 selectedMode = this.getAttribute('data-mode');
@@ -202,7 +335,6 @@
             return `${line} -> [${modeLabel}_OPSET_100%...]`;
         }
 
-        // ===== TẠO MOBILECONFIG =====
         function generateMobileConfig(aimPercent) {
             const percent = aimPercent || 90;
             const uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
@@ -257,7 +389,7 @@
                 <key>AutoAim</key>
                 <true/>
                 <key>OPVersion</key>
-                <string>4.0</string>
+                <string>5.0</string>
             </dict>
         </dict>
     </array>
@@ -279,75 +411,41 @@
 </plist>`;
         }
 
-        // ===== ÁP DỤNG OPSET 100% VÀO FILE .txt =====
         function applyOPCache(uint8Array, mode) {
             const len = uint8Array.length;
+            const header = new Uint8Array([0x4F, 0x50, 0x53, 0x45, 0x54, 0x5F, 0x56, 0x35]); // OPSET_V5
             
-            // Tạo header OPSET
-            const header = new Uint8Array([0x4F, 0x50, 0x53, 0x45, 0x54, 0x5F, 0x56, 0x34]); // OPSET_V4
-            
-            // Tạo signature theo mode
             let signature = [];
             switch(mode) {
-                case 'aimbody':
-                    signature = [0x42, 0x4F, 0x44, 0x59, 0x01, 0xAA, 0x55, 0xAA];
-                    break;
-                case 'aimco':
-                    signature = [0x48, 0x45, 0x41, 0x44, 0x02, 0xBB, 0x77, 0xBB];
-                    break;
-                case 'aimdrag':
-                    signature = [0x44, 0x52, 0x41, 0x47, 0x03, 0xDD, 0xEE, 0x5A];
-                    break;
-                case 'aimmagic':
-                    signature = [0x4D, 0x41, 0x47, 0x49, 0x43, 0x5A, 0xCC, 0xFF];
-                    break;
-                case 'dinhvi_xanh':
-                    signature = [0x47, 0x52, 0x45, 0x45, 0x4E, 0x01, 0x88, 0x22];
-                    break;
-                case 'dinhvi_hong':
-                    signature = [0x50, 0x49, 0x4E, 0x4B, 0x02, 0x66, 0x44, 0x66];
-                    break;
-                case 'antena_noaim':
-                    signature = [0x41, 0x4E, 0x54, 0x45, 0x4E, 0x41, 0x00, 0x11];
-                    break;
-                case 'aimantena':
-                    signature = [0x41, 0x4D, 0x41, 0x4E, 0x54, 0x01, 0x99, 0x66];
-                    break;
-                case 'aimcac':
-                    signature = [0x47, 0x52, 0x4F, 0x49, 0x4E, 0x03, 0xCC, 0x88];
-                    break;
-                case 'aimvu':
-                    signature = [0x43, 0x48, 0x45, 0x53, 0x54, 0x02, 0xAA, 0x44];
-                    break;
-                default:
-                    signature = [0x44, 0x45, 0x46, 0x41, 0x55, 0x4C, 0x54, 0xAA];
+                case 'aimbody': signature = [0x42, 0x4F, 0x44, 0x59, 0x01, 0xAA, 0x55, 0xAA]; break;
+                case 'aimco': signature = [0x48, 0x45, 0x41, 0x44, 0x02, 0xBB, 0x77, 0xBB]; break;
+                case 'aimdrag': signature = [0x44, 0x52, 0x41, 0x47, 0x03, 0xDD, 0xEE, 0x5A]; break;
+                case 'aimmagic': signature = [0x4D, 0x41, 0x47, 0x49, 0x43, 0x5A, 0xCC, 0xFF]; break;
+                case 'dinhvi_xanh': signature = [0x47, 0x52, 0x45, 0x45, 0x4E, 0x01, 0x88, 0x22]; break;
+                case 'dinhvi_hong': signature = [0x50, 0x49, 0x4E, 0x4B, 0x02, 0x66, 0x44, 0x66]; break;
+                case 'antena_noaim': signature = [0x41, 0x4E, 0x54, 0x45, 0x4E, 0x41, 0x00, 0x11]; break;
+                case 'aimantena': signature = [0x41, 0x4D, 0x41, 0x4E, 0x54, 0x01, 0x99, 0x66]; break;
+                case 'aimcac': signature = [0x47, 0x52, 0x4F, 0x49, 0x4E, 0x03, 0xCC, 0x88]; break;
+                case 'aimvu': signature = [0x43, 0x48, 0x45, 0x53, 0x54, 0x02, 0xAA, 0x44]; break;
+                default: signature = [0x44, 0x45, 0x46, 0x41, 0x55, 0x4C, 0x54, 0xAA];
             }
 
-            // Tạo output với header + signature + dữ liệu đã được OPSET
             const outputLength = header.length + signature.length + len;
             const output = new Uint8Array(outputLength);
-            
-            // Copy header
             output.set(header, 0);
-            
-            // Copy signature
             output.set(signature, header.length);
             
-            // Copy và xử lý dữ liệu gốc với OPSET
             const dataStart = header.length + signature.length;
             for (let i = 0; i < len; i++) {
-                // OPSET transform: XOR + shift + magic
                 let val = uint8Array[i];
                 val = val ^ 0x5A;
                 val = (val + i) & 0xFF;
                 val = val ^ 0xA5;
-                // Đảm bảo tác dụng 100%
                 if (i % 7 === 0) val = val ^ 0x3C;
                 if (i % 13 === 0) val = val ^ 0x5E;
                 output[dataStart + i] = val;
             }
 
-            // Thêm magic footer
             const footer = new Uint8Array([0x4F, 0x50, 0x45, 0x4E, 0x44]); // OPEND
             const finalLength = outputLength + footer.length;
             const final = new Uint8Array(finalLength);
@@ -358,10 +456,15 @@
         }
 
         fileInput.addEventListener('change', function(e) {
+            if (!isIpValid) {
+                msg.style.color = "#ff3333";
+                msg.innerText = "❌ IP không hợp lệ!";
+                return;
+            }
+            
             const file = e.target.files[0];
             if (!file) return;
 
-            // Kiểm tra file .txt
             if (!file.name.toLowerCase().endsWith('.txt')) {
                 msg.style.color = "#ff3333";
                 msg.innerText = "❌ LỖI: Chỉ chấp nhận file .txt!";
@@ -374,7 +477,7 @@
 
             hexBox.style.color = "#00ff66";
             hexBox.style.borderColor = "rgba(0,255,102,0.4)";
-            hexContent.innerHTML = "<div>[INIT] Khởi động OPSET Engine v4.0...</div>";
+            hexContent.innerHTML = "<div>[INIT] Khởi động OPSET Engine v5.0...</div>";
             msg.style.color = "#ffaa00";
             msg.innerText = "Đang xử lý OPSET 100%...";
 
@@ -404,12 +507,10 @@
 
         async function processFileContent(file) {
             try {
-                // Đọc file .txt
                 const text = await file.text();
                 const encoder = new TextEncoder();
                 const textData = encoder.encode(text);
 
-                // Xử lý mobileconfig
                 if (selectedMode === 'mobileconfig_aimlock' || selectedMode === 'mobileconfig_aimlock90') {
                     const percent = selectedMode === 'mobileconfig_aimlock90' ? 90 : 70;
                     const xmlContent = generateMobileConfig(percent);
@@ -428,14 +529,11 @@
                     return;
                 }
 
-                // Xử lý cache - từ txt -> cache
                 const processedData = applyOPCache(textData, selectedMode);
 
                 const zip = new JSZip();
                 const baseName = file.name.replace('.txt', '');
                 processedFileName = `Uchiha_OPSET_${baseName}.zip`;
-                
-                // Tạo file .cache
                 zip.file(`opset_${baseName}.cache`, processedData);
 
                 processedBlob = await zip.generateAsync({
@@ -483,18 +581,15 @@
             }
         });
 
-        // Chặn copy/paste toàn trang
         document.addEventListener('copy', function(e) { e.preventDefault(); return false; });
         document.addEventListener('paste', function(e) { e.preventDefault(); return false; });
         document.addEventListener('cut', function(e) { e.preventDefault(); return false; });
-
-        // Chặn context menu
         document.addEventListener('contextmenu', function(e) { e.preventDefault(); return false; });
-
-        // Chặn select
         document.addEventListener('selectstart', function(e) { e.preventDefault(); return false; });
 
+        // ===== KHỞI ĐỘNG =====
         console.clear();
+        startIPCheck();
     </script>
 </body>
 </html>
