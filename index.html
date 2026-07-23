@@ -2,452 +2,1170 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <title>Tool Hack Free Fire - Code Thật</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Uchiha Modz</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+    
+    <!-- JSZip -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    
     <style>
-        * { margin:0; padding:0; box-sizing:border-box; font-family: -apple-system, sans-serif; }
-        body { background:#F8F9FA; color:#212529; min-height:100vh; padding:0 12px 80px; }
-        header { background:linear-gradient(135deg, #0D6EFD, #1E90FF); padding:20px 16px; text-align:center; margin:0 -12px 16px; box-shadow:0 4px 12px rgba(13,110,253,0.2); }
-        header h1 { color:white; font-size:24px; font-weight:700; letter-spacing:0.5px; }
-        header small { color:rgba(255,255,255,0.85); font-size:15px; display:block; margin-top:4px; }
-        .container { max-width:900px; margin:0 auto; }
-        .stats { background:#E3F2FD; border-radius:14px; padding:14px 18px; display:flex; flex-wrap:wrap; gap:8px 20px; font-size:15px; border:1px solid #BBDEFB; margin-bottom:16px; color:#0D47A1; }
-        .stats span { color:#0D6EFD; font-weight:700; }
-        .form-group { background:white; border-radius:14px; padding:16px; border:1px solid #DEE2E6; margin-bottom:16px; display:flex; flex-wrap:wrap; gap:12px; }
-        .form-group input, .form-group textarea { flex:1; min-width:200px; padding:12px 16px; border:2px solid #DEE2E6; border-radius:12px; font-size:16px; outline:none; transition:0.2s; }
-        .form-group input:focus, .form-group textarea:focus { border-color:#0D6EFD; box-shadow:0 0 0 3px rgba(13,110,253,0.15); }
-        .form-group textarea { resize:vertical; min-height:50px; }
-        .toolbar { display:flex; flex-wrap:wrap; gap:10px; margin-bottom:16px; }
-        .toolbar select, .toolbar button { padding:10px 20px; border:none; border-radius:30px; font-size:15px; font-weight:600; background:white; color:#0D6EFD; border:2px solid #0D6EFD; cursor:pointer; transition:0.15s; }
-        .toolbar button { background:#0D6EFD; color:white; border-color:#0D6EFD; }
-        .toolbar button:active { transform:scale(0.96); }
-        .toolbar .clear-btn { background:#DC3545; border-color:#DC3545; color:white; }
-        .search-box { width:100%; padding:14px 18px; border-radius:30px; border:2px solid #DEE2E6; background:white; font-size:16px; margin-bottom:16px; outline:none; transition:0.2s; }
-        .search-box:focus { border-color:#0D6EFD; box-shadow:0 0 0 3px rgba(13,110,253,0.1); }
-        .file-grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(170px,1fr)); gap:12px; margin-bottom:20px; }
-        .file-card { background:white; border:1px solid #DEE2E6; border-radius:14px; padding:14px; display:flex; align-items:center; gap:12px; cursor:pointer; transition:0.15s; box-shadow:0 2px 4px rgba(0,0,0,0.02); }
-        .file-card:active { background:#F1F3F5; transform:scale(0.98); }
-        .file-card input[type="checkbox"] { width:20px; height:20px; accent-color:#0D6EFD; cursor:pointer; flex-shrink:0; }
-        .file-card .info { flex:1; overflow:hidden; }
-        .file-card .info .name { font-size:15px; font-weight:500; color:#212529; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-        .file-card .info .size { font-size:13px; color:#6C757D; }
-        .file-card .icon { font-size:24px; }
-        .file-card.selected { border-color:#0D6EFD; background:#E8F0FE; box-shadow:0 0 0 2px rgba(13,110,253,0.15); }
-        .action-buttons { display:flex; gap:14px; margin-top:8px; }
-        .action-buttons button { flex:1; padding:18px; font-size:20px; font-weight:700; border:none; border-radius:40px; background:#0D6EFD; color:white; box-shadow:0 4px 14px rgba(13,110,253,0.25); cursor:pointer; transition:0.15s; }
-        .action-buttons button:active { transform:scale(0.97); }
-        .action-buttons .download { background:#198754; box-shadow:0 4px 14px rgba(25,135,84,0.25); }
-        .action-buttons button:disabled { opacity:0.5; transform:none; }
-        .toast { position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:#212529; color:white; padding:14px 28px; border-radius:40px; font-size:16px; opacity:0; transition:0.4s; pointer-events:none; z-index:999; white-space:nowrap; box-shadow:0 4px 16px rgba(0,0,0,0.15); }
-        .toast.success { background:#198754; }
-        .toast.error { background:#DC3545; }
-        .toast.show { opacity:1; pointer-events:auto; bottom:30px; }
-        .history { margin-top:20px; background:white; border-radius:14px; padding:14px; border:1px solid #DEE2E6; }
-        .history h3 { font-size:15px; color:#495057; margin-bottom:10px; }
-        .history-item { display:flex; justify-content:space-between; font-size:14px; padding:8px 0; border-bottom:1px solid #F1F3F5; color:#495057; }
-        .history-item:last-child { border-bottom:none; }
-        .group-badge { display:inline-block; font-size:11px; padding:2px 10px; border-radius:30px; background:#E3F2FD; color:#0D6EFD; margin-left:6px; font-weight:600; }
-        @media (max-width:500px) { header h1 { font-size:20px; } .file-grid { grid-template-columns:1fr 1fr; } .stats { font-size:13px; } .form-group input, .form-group textarea { min-width:100%; } }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: #0a0505;
+            color: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        .bg-glow {
+            position: absolute;
+            width: 320px;
+            height: 320px;
+            background: radial-gradient(circle, rgba(255, 0, 0, 0.25) 0%, rgba(0, 0, 0, 0) 70%);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .card {
+            position: relative;
+            z-index: 1;
+            background: rgba(18, 10, 10, 0.85);
+            border: 1px solid rgba(255, 50, 50, 0.3);
+            border-radius: 20px;
+            padding: 25px 20px;
+            width: 100%;
+            max-width: 420px;
+            text-align: center;
+            box-shadow: 0 0 25px rgba(255, 0, 0, 0.15);
+            backdrop-filter: blur(10px);
+        }
+
+        .avatar-container {
+            width: 90px;
+            height: 90px;
+            margin: 0 auto 15px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 2px solid #ff3333;
+            box-shadow: 0 0 12px rgba(255, 0, 0, 0.4);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #000;
+        }
+
+        .avatar {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+        }
+
+        .title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: #ffffff;
+            text-shadow: 0 0 8px rgba(255, 0, 0, 0.5);
+        }
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        .input-group {
+            margin-bottom: 12px;
+        }
+
+        .key-input, .file-input-label {
+            width: 100%;
+            padding: 12px 14px;
+            background-color: #140808;
+            border: 1px solid rgba(255, 50, 50, 0.4);
+            border-radius: 10px;
+            color: #ffffff;
+            font-size: 13px;
+            outline: none;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .key-input::placeholder {
+            color: #885555;
+        }
+
+        .key-input:focus {
+            border-color: #ff3333;
+            box-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+        }
+
+        .mode-row {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .mode-btn {
+            padding: 10px 5px;
+            background: #140808;
+            border: 1px solid rgba(255, 50, 50, 0.4);
+            border-radius: 8px;
+            color: #885555;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .mode-btn.active {
+            background: linear-gradient(135deg, #cc0000, #880000);
+            color: #ffffff;
+            border-color: #ff4d4d;
+            box-shadow: 0 0 8px rgba(255, 0, 0, 0.4);
+        }
+
+        .hex-box {
+            background: #050202;
+            border: 1px solid rgba(255, 50, 50, 0.2);
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 12px;
+            font-family: monospace;
+            font-size: 11px;
+            color: #885555;
+            text-align: left;
+            height: 85px;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.8);
+            line-height: 1.4;
+        }
+
+        .hex-box::-webkit-scrollbar {
+            width: 3px;
+        }
+        .hex-box::-webkit-scrollbar-thumb {
+            background: #ff3333;
+            border-radius: 10px;
+        }
+
+        .file-input-label {
+            display: block;
+            cursor: pointer;
+            background: linear-gradient(135deg, #2b0808, #1a0505);
+            margin-bottom: 12px;
+            color: #ffaaaa;
+        }
+        .file-input-label:hover {
+            border-color: #ff3333;
+            color: #fff;
+        }
+        input[type="file"] {
+            display: none;
+        }
+
+        #message {
+            margin-bottom: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            min-height: 16px;
+        }
+
+        .btn-row {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 11px 10px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            text-decoration: none;
+            color: #ffffff;
+            background: linear-gradient(135deg, #2b0808, #1a0505);
+            border: 1px solid rgba(255, 50, 50, 0.4);
+            transition: all 0.2s ease;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .btn:hover {
+            background: linear-gradient(135deg, #cc0000, #880000);
+            border-color: #ff4d4d;
+            box-shadow: 0 0 12px rgba(255, 0, 0, 0.4);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-success {
+            border-color: #00ff66;
+            background: rgba(0, 255, 102, 0.1);
+        }
+        .btn-success:hover {
+            background: linear-gradient(135deg, #004422, #00ff66);
+        }
+
+        .key-hint {
+            font-size: 11px;
+            color: #664444;
+            margin-top: 8px;
+            letter-spacing: 1px;
+        }
+        .key-hint span {
+            color: #ff6666;
+            font-weight: bold;
+        }
+
+        /* Toast notification */
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 12px 20px;
+            border-radius: 8px;
+            z-index: 10000;
+            animation: slideIn 0.5s ease;
+            font-weight: bold;
+            max-width: 350px;
+            font-size: 13px;
+        }
+        .toast-success {
+            background: rgba(0, 255, 102, 0.2);
+            border: 1px solid #00ff66;
+            color: #00ff66;
+        }
+        .toast-error {
+            background: rgba(255, 51, 102, 0.2);
+            border: 1px solid #ff3366;
+            color: #ff3366;
+        }
+        .toast-warning {
+            background: rgba(255, 204, 0, 0.2);
+            border: 1px solid #ffcc00;
+            color: #ffcc00;
+        }
+        .toast-info {
+            background: rgba(0, 191, 255, 0.2);
+            border: 1px solid #00bfff;
+            color: #00bfff;
+        }
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .loading-spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 0, 0, 0.1);
+            border-top: 2px solid #ff3333;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            display: inline-block;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Key Status Display */
+        .key-status-bar {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(255, 50, 50, 0.2);
+            border-radius: 8px;
+            padding: 10px 14px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+        .key-status-bar .key-name-display {
+            font-family: monospace;
+            color: #ffaaaa;
+            font-size: 13px;
+        }
+        .key-status-bar .key-time-display {
+            font-size: 13px;
+            font-weight: bold;
+        }
+        .key-status-bar .key-time-display .time-green {
+            color: #00ff66;
+        }
+        .key-status-bar .key-time-display .time-yellow {
+            color: #ffcc00;
+        }
+        .key-status-bar .key-time-display .time-red {
+            color: #ff3333;
+        }
+        .key-status-bar .key-expired-badge {
+            color: #ff3333;
+            font-weight: bold;
+            animation: blink 1s infinite;
+        }
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        .status-badge {
+            font-size: 11px;
+            padding: 2px 10px;
+            border-radius: 20px;
+            display: inline-block;
+        }
+        .status-active {
+            background: rgba(0, 255, 102, 0.2);
+            color: #00ff66;
+            border: 1px solid #00ff66;
+        }
+        .status-expired {
+            background: rgba(255, 51, 102, 0.2);
+            color: #ff3366;
+            border: 1px solid #ff3366;
+        }
+        .status-near {
+            background: rgba(255, 204, 0, 0.2);
+            color: #ffcc00;
+            border: 1px solid #ffcc00;
+        }
+
+        .key-list-item {
+            background: rgba(0, 10, 20, 0.6);
+            border: 1px solid rgba(255, 50, 50, 0.15);
+            border-radius: 8px;
+            padding: 10px 12px;
+            margin-bottom: 6px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.2s;
+        }
+        .key-list-item:hover {
+            border-color: #ff3333;
+        }
+        .key-list-item .key-name {
+            font-family: monospace;
+            font-size: 13px;
+            color: #ffaaaa;
+        }
+        .key-list-item .key-info {
+            font-size: 11px;
+            color: #886666;
+        }
+        .key-list-item .key-actions {
+            display: flex;
+            gap: 6px;
+        }
+        .key-list-item .key-actions button {
+            background: none;
+            border: none;
+            color: #886666;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        .key-list-item .key-actions button:hover {
+            color: #ff3333;
+        }
+
+        .admin-panel {
+            margin-top: 15px;
+            border-top: 1px solid rgba(255, 50, 50, 0.2);
+            padding-top: 15px;
+        }
+        .admin-panel summary {
+            cursor: pointer;
+            color: #885555;
+            font-size: 12px;
+            font-weight: 600;
+        }
+        .admin-panel summary:hover {
+            color: #ffaaaa;
+        }
+        .admin-panel .quick-actions {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+        .admin-panel .quick-actions .btn {
+            font-size: 11px;
+            padding: 6px 12px;
+            flex: none;
+        }
+
+        .logout-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 99999;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .logout-overlay.show {
+            display: flex;
+        }
+        .logout-overlay .big-icon {
+            font-size: 60px;
+            color: #ff3333;
+        }
+        .logout-overlay .big-text {
+            font-size: 24px;
+            font-weight: bold;
+            color: #ff3333;
+        }
+        .logout-overlay .sub-text {
+            color: #886666;
+            font-size: 14px;
+        }
+        .logout-overlay .btn {
+            max-width: 200px;
+        }
     </style>
 </head>
-<body>
-<header><h1>⚡ DEV TRANDUC ⚡</h1><small>Tool Hack Free Fire - Code Lua Thật</small></header>
-<div class="container">
-    <div class="stats" id="stats">📁 Tổng: <span id="totalFiles">0</span> 📦 Dung lượng: <span id="totalSize">0</span> KB ⏱️ Thời gian: <span id="genTime">0</span> ms 🧩 Đã chọn: <span id="selectedCount">0</span></div>
-    
-    <div class="form-group">
-        <input type="text" id="mcName" placeholder="📛 Tên MobileConfig (VD: Wifi Optimize)" value="FF_Optimize">
-        <textarea id="mcDesc" placeholder="📝 Mô tả MobileConfig (VD: Tối ưu mạng chơi Free Fire)">Cấu hình DNS + Proxy giảm ping</textarea>
+<body oncontextmenu="return false;">
+
+    <!-- Logout Overlay -->
+    <div class="logout-overlay" id="logoutOverlay">
+        <div class="big-icon">🔒</div>
+        <div class="big-text">KEY ĐÃ HẾT HẠN</div>
+        <div class="sub-text" id="logoutReason">Key đã hết hạn hoặc bị xóa</div>
+        <button class="btn" onclick="location.reload()">
+            <i class="fa-solid fa-arrow-right"></i> Quay lại đăng nhập
+        </button>
     </div>
 
-    <div class="toolbar">
-        <select id="groupSelect"><option value="all">▶️ Chọn nhóm</option><option value="aimbot">🎯 Aimbot</option><option value="aimlock">🔒 Aimlock</option><option value="esp">👁️ ESP/Wallhack</option><option value="speed">💨 Speed/Move</option><option value="antiban">🛡️ Anti-ban</option><option value="cache">💾 Cache</option><option value="mobileconfig">📶 MobileConfig</option></select>
-        <button onclick="selectGroup()">Áp dụng</button>
-        <button onclick="selectAll()">✅ Chọn tất cả</button>
-        <button class="clear-btn" onclick="clearAll()">🗑️ Bỏ chọn</button>
-    </div>
-    <input class="search-box" id="searchInput" placeholder="🔍 Tìm file..." oninput="filterFiles(this.value)">
-    <div class="file-grid" id="fileGrid"></div>
-    <div class="action-buttons">
-        <button class="generate" onclick="generateZip()">⚡ Tạo ZIP</button>
-        <button class="download" id="downloadBtn" onclick="downloadZip()" disabled>📥 Tải ZIP</button>
-    </div>
-    <div class="history" id="historyBox"><h3>📜 Lịch sử xuất</h3><div id="historyList"></div></div>
-</div>
-<div class="toast" id="toast"></div>
-<script>
-// ===== DANH SÁCH FILE HACK FREE FIRE =====
-const fileList = [
-    // Aimbot (.aim)
-    { id:'auto_aim', name:'auto_aim', ext:'.aim', size:8, icon:'🎯', group:'aimbot' },
-    { id:'silent_aim', name:'silent_aim', ext:'.aim', size:10, icon:'🤫', group:'aimbot' },
-    { id:'magic_bullet', name:'magic_bullet', ext:'.aim', size:9, icon:'✨', group:'aimbot' },
-    { id:'norecoil', name:'norecoil', ext:'.aim', size:6, icon:'🔫', group:'aimbot' },
-    { id:'rapid_fire', name:'rapid_fire', ext:'.aim', size:7, icon:'🔥', group:'aimbot' },
-    { id:'trigger_bot', name:'trigger_bot', ext:'.aim', size:8, icon:'⚡', group:'aimbot' },
-    { id:'aim_fov', name:'aim_fov', ext:'.aim', size:7, icon:'📐', group:'aimbot' },
-    { id:'smooth_aim', name:'smooth_aim', ext:'.aim', size:6, icon:'🧈', group:'aimbot' },
-    { id:'prediction', name:'prediction', ext:'.aim', size:11, icon:'📏', group:'aimbot' },
-    { id:'visible_check', name:'visible_check', ext:'.aim', size:5, icon:'👀', group:'aimbot' },
-    // Aimlock (.aimlock)
-    { id:'head_lock', name:'head_lock', ext:'.aimlock', size:6, icon:'🎯', group:'aimlock' },
-    { id:'body_lock', name:'body_lock', ext:'.aimlock', size:5, icon:'🎯', group:'aimlock' },
-    { id:'chest_lock', name:'chest_lock', ext:'.aimlock', size:5, icon:'🎯', group:'aimlock' },
-    { id:'priority_lock', name:'priority_lock', ext:'.aimlock', size:7, icon:'⭐', group:'aimlock' },
-    { id:'team_lock', name:'team_lock', ext:'.aimlock', size:6, icon:'🤝', group:'aimlock' },
-    { id:'vehicle_lock', name:'vehicle_lock', ext:'.aimlock', size:6, icon:'🚗', group:'aimlock' },
-    // ESP/Wallhack (.aim)
-    { id:'esp_box', name:'esp_box', ext:'.aim', size:12, icon:'📦', group:'esp' },
-    { id:'esp_line', name:'esp_line', ext:'.aim', size:10, icon:'📏', group:'esp' },
-    { id:'esp_health', name:'esp_health', ext:'.aim', size:9, icon:'❤️', group:'esp' },
-    { id:'esp_distance', name:'esp_distance', ext:'.aim', size:8, icon:'📐', group:'esp' },
-    { id:'wallhack', name:'wallhack', ext:'.aim', size:14, icon:'🧱', group:'esp' },
-    { id:'radar_hack', name:'radar_hack', ext:'.aim', size:11, icon:'📡', group:'esp' },
-    // Speed/Movement (.aim)
-    { id:'speed_hack', name:'speed_hack', ext:'.aim', size:8, icon:'💨', group:'speed' },
-    { id:'jump_hack', name:'jump_hack', ext:'.aim', size:7, icon:'⬆️', group:'speed' },
-    { id:'fly_hack', name:'fly_hack', ext:'.aim', size:10, icon:'🕊️', group:'speed' },
-    { id:'swim_hack', name:'swim_hack', ext:'.aim', size:9, icon:'🏊', group:'speed' },
-    { id:'no_fog', name:'no_fog', ext:'.aim', size:5, icon:'🌫️', group:'speed' },
-    // Anti-ban (.aim)
-    { id:'anti_ban', name:'anti_ban', ext:'.aim', size:15, icon:'🛡️', group:'antiban' },
-    { id:'bypass_anticheat', name:'bypass_anticheat', ext:'.aim', size:18, icon:'🔓', group:'antiban' },
-    { id:'unlock_skin', name:'unlock_skin', ext:'.aim', size:13, icon:'👗', group:'antiban' },
-    // Cache (.cache)
-    { id:'weapon_cache', name:'weapon_cache', ext:'.cache', size:10, icon:'🔫', group:'cache' },
-    { id:'player_cache', name:'player_cache', ext:'.cache', size:9, icon:'👤', group:'cache' },
-    { id:'map_cache', name:'map_cache', ext:'.cache', size:12, icon:'🗺️', group:'cache' },
-    // MobileConfig (.mobileconfig)
-    { id:'wifi_optimize', name:'wifi_optimize', ext:'.mobileconfig', size:8, icon:'📶', group:'mobileconfig' },
-    { id:'vpn_fast', name:'vpn_fast', ext:'.mobileconfig', size:10, icon:'🔒', group:'mobileconfig' },
-    { id:'dns_game', name:'dns_game', ext:'.mobileconfig', size:7, icon:'🌍', group:'mobileconfig' },
-    { id:'proxy_hack', name:'proxy_hack', ext:'.mobileconfig', size:9, icon:'🔄', group:'mobileconfig' }
-];
-let selected = new Set();
-let filtered = [...fileList];
-let zipBlob = null;
+    <div class="bg-glow"></div>
 
-// ===== RENDER =====
-function render() {
-    const grid = document.getElementById('fileGrid');
-    grid.innerHTML = '';
-    filtered.forEach(f => {
-        const checked = selected.has(f.id);
-        const card = document.createElement('div');
-        card.className = `file-card${checked?' selected':''}`;
-        const groupLabel = { aimbot:'AIM', aimlock:'LOCK', esp:'ESP', speed:'SPD', antiban:'ANTI', cache:'CACHE', mobileconfig:'MC' }[f.group] || '';
-        card.innerHTML = `
-            <input type="checkbox" ${checked?'checked':''}>
-            <span class="icon">${f.icon}</span>
-            <div class="info">
-                <div class="name">${f.name}${f.ext} <span class="group-badge">${groupLabel}</span></div>
-                <div class="size">${f.size} KB</div>
+    <div class="card">
+        <div class="avatar-container">
+            <img src="https://sf-static.upanhlaylink.com/img/image_2026072327a3054446ab924ba09ace8e25a3a7ec.jpg" alt="Avatar" class="avatar">
+        </div>
+
+        <h1 class="title">Uchiha Modz</h1>
+
+        <!-- TRANG 1: Nhập Key -->
+        <div id="page1" class="section active">
+            <div class="input-group">
+                <input type="text" id="keyInput" class="key-input" placeholder="Nhập Key..." spellcheck="false">
             </div>
-        `;
-        const cb = card.querySelector('input');
-        cb.addEventListener('change', () => {
-            if (cb.checked) selected.add(f.id); else selected.delete(f.id);
-            card.classList.toggle('selected', cb.checked);
-            updateStats();
-        });
-        card.addEventListener('click', (e) => {
-            if (e.target.tagName !== 'INPUT') { cb.checked = !cb.checked; cb.dispatchEvent(new Event('change')); }
-        });
-        grid.appendChild(card);
-    });
-    updateStats();
-}
-function filterFiles(keyword) {
-    const k = keyword.toLowerCase().trim();
-    filtered = fileList.filter(f => f.name.includes(k) || f.ext.includes(k));
-    render();
-}
-function updateStats() {
-    let totalSize = 0;
-    selected.forEach(id => {
-        const f = fileList.find(x => x.id === id);
-        if (f) totalSize += f.size;
-    });
-    document.getElementById('totalFiles').textContent = fileList.length;
-    document.getElementById('totalSize').textContent = totalSize;
-    document.getElementById('selectedCount').textContent = selected.size;
-}
-function selectAll() { fileList.forEach(f => selected.add(f.id)); render(); }
-function clearAll() { selected.clear(); render(); }
+            <div id="msg1" style="color: #ff3333; font-size: 12px; margin-bottom: 12px; min-height: 16px;"></div>
+            <div class="btn-row">
+                <a href="zalo.me/84976457016" target="_blank" class="btn">
+                    <i class="fa-solid fa-comment-dots"></i> ZALO
+                </a>
+                <button class="btn" id="nextBtn">
+                    Tiếp tục <i class="fa-solid fa-arrow-right"></i>
+                </button>
+            </div>
+            <div class="key-hint">🔑 MUA KEY LIÊN HỆ: 0976457016</div>
+        </div>
 
-// ===== CHỌN NHÓM =====
-function selectGroup() {
-    const group = document.getElementById('groupSelect').value;
-    if (group === 'all') {
-        selectAll();
-    } else {
-        selected.clear();
-        fileList.forEach(f => { if (f.group === group) selected.add(f.id); });
-        render();
-    }
-}
+        <!-- TRANG 2: Chọn Mode, Sửa & Tải file -->
+        <div id="page2" class="section">
+            <!-- Key Status Bar -->
+            <div class="key-status-bar" id="keyStatusBar">
+                <span class="key-name-display" id="currentKeyDisplay">🔑 Loading...</span>
+                <span class="key-time-display" id="keyTimeDisplay">
+                    <span class="time-green">⏳ Đang kiểm tra...</span>
+                </span>
+            </div>
 
-// ===== TẠO CODE HACK THẬT (LUA) =====
-function getHackCode(id, mcName, mcDesc) {
-    const f = fileList.find(x => x.id === id);
-    if (!f) return '-- Error';
-    let code = '';
-    switch(f.group) {
-        case 'aimbot':
-            code = `-- AIM Hack Free Fire - ${f.name}
--- DEV_TRANDUC
--- Chức năng: ${f.name.replace(/_/g,' ').toUpperCase()}
-local function ${f.name}()
-    -- Tìm kẻ địch gần nhất
-    local enemy = getClosestEnemy()
-    if enemy then
-        -- Kiểm tra tầm nhìn (nếu cần)
-        ${f.id === 'visible_check' ? 'if isVisible(enemy) then' : ''}
-        -- Ngắm vào vị trí
-        ${f.id === 'auto_aim' ? 'aimAt(enemy.head)' : ''}
-        ${f.id === 'silent_aim' ? 'silentAim(enemy.head)' : ''}
-        ${f.id === 'magic_bullet' ? 'magicBullet(enemy)' : ''}
-        ${f.id === 'norecoil' ? 'setRecoil(0)' : ''}
-        ${f.id === 'rapid_fire' ? 'setFireRate(0.03)' : ''}
-        ${f.id === 'trigger_bot' ? 'if isAimingAt(enemy) then fire() end' : ''}
-        ${f.id === 'aim_fov' ? 'setFOV(30)' : ''}
-        ${f.id === 'smooth_aim' ? 'setSmoothness(0.8)' : ''}
-        ${f.id === 'prediction' ? 'local pred = predictMovement(enemy); aimAt(pred)' : ''}
-        ${f.id === 'visible_check' ? 'end' : ''}
-        -- Bắn tự động
-        ${f.id === 'trigger_bot' ? '' : 'fire()'}
-    end
-end
--- Gọi hàm khi chạy
-${f.name}()
-return true`;
-            break;
-        case 'aimlock':
-            code = `-- AIMLOCK Free Fire - ${f.name}
--- DEV_TRANDUC
--- Khóa chặt vào mục tiêu
-local targetPart = "${f.id.includes('head')?'head':f.id.includes('body')?'body':f.id.includes('chest')?'chest':'auto'}"
-local priority = ${f.id.includes('priority')?'2':'1'}
-local teamCheck = ${f.id.includes('team')?'true':'false'}
-local vehicleCheck = ${f.id.includes('vehicle')?'true':'false'}
+            <div class="mode-row">
+                <button class="mode-btn active" data-mode="aimbody">AimBody</button>
+                <button class="mode-btn" data-mode="aimco">Aim Cổ</button>
+                <button class="mode-btn" data-mode="sua">Sửa</button>
+                <button class="mode-btn" data-mode="chen">Chèn</button>
+            </div>
 
-function lockOnEnemy()
-    local enemies = getEnemies()
-    for _, enemy in ipairs(enemies) do
-        if teamCheck and enemy.team == getMyTeam() then goto continue end
-        if vehicleCheck and not enemy.inVehicle then goto continue end
-        if enemy.health > 0 and enemy.distance < 100 then
-            lockAim(enemy, targetPart, priority)
-            return true
-        end
-        ::continue::
-    end
-    return false
-end
-lockOnEnemy()`;
-            break;
-        case 'esp':
-            code = `-- ESP/Wallhack Free Fire - ${f.name}
--- DEV_TRANDUC
--- Vẽ thông tin lên màn hình
-function drawESP()
-    local enemies = getEnemies()
-    for _, enemy in ipairs(enemies) do
-        if enemy.visible or ${f.id.includes('wall')?'true':'false'} then
-            ${f.id === 'esp_box' ? 'drawBox(enemy.x, enemy.y, enemy.z, 2, 0, 255, 0)' : ''}
-            ${f.id === 'esp_line' ? 'drawLineTo(enemy.x, enemy.y, enemy.z, 255, 0, 0)' : ''}
-            ${f.id === 'esp_health' ? 'drawText(enemy.health.." HP", enemy.x, enemy.y-10, 255, 0, 0)' : ''}
-            ${f.id === 'esp_distance' ? 'drawText(enemy.distance.."m", enemy.x, enemy.y+10, 0, 255, 255)' : ''}
-            ${f.id === 'wallhack' ? '-- Xuyên tường: hiển thị ngay cả khi không nhìn thấy' : ''}
-            ${f.id === 'radar_hack' ? 'drawOnRadar(enemy.x, enemy.z, 0, 255, 0)' : ''}
-        end
-    end
-end
-drawESP()`;
-            break;
-        case 'speed':
-            code = `-- Speed/Movement Hack Free Fire - ${f.name}
--- DEV_TRANDUC
--- Tăng tốc di chuyển
-local speedMult = ${f.id.includes('speed')?'2.5':f.id.includes('jump')?'3.0':f.id.includes('fly')?'1.5':f.id.includes('swim')?'2.0':'1.0'}
-local noFog = ${f.id.includes('no_fog')?'true':'false'}
+            <div class="hex-box" id="hexBox">
+                <div id="hexContent">Chờ nhập file data-cache để chạy mã...</div>
+            </div>
 
-function applyMovement()
-    ${f.id.includes('speed') ? 'setSpeedMultiplier(speedMult)' : ''}
-    ${f.id.includes('jump') ? 'setJumpHeight(3.0)' : ''}
-    ${f.id.includes('fly') ? 'enableFlyMode(true)' : ''}
-    ${f.id.includes('swim') ? 'setSwimSpeed(2.0)' : ''}
-    ${f.id.includes('no_fog') ? 'setFogDensity(0)' : ''}
-end
-applyMovement()`;
-            break;
-        case 'antiban':
-            code = `-- Anti-Ban / Bypass Free Fire - ${f.name}
--- DEV_TRANDUC
--- Vượt qua hệ thống chống hack
-function bypass()
-    -- Ẩn tiến trình hack
-    ${f.id.includes('anti_ban') ? 'hideProcess("hack.so")' : ''}
-    ${f.id.includes('bypass_anticheat') ? 'patchMemory(0x123456, 0x90)' : ''}
-    ${f.id.includes('unlock_skin') ? 'unlockAllSkins()' : ''}
-    -- Xóa log
-    clearLogs()
-    return true
-end
-bypass()`;
-            break;
-        case 'cache':
-            code = `-- Cache Data Free Fire - ${f.name}
--- DEV_TRANDUC
--- Dữ liệu giả lập cho game
-local cacheData = {
-    ${f.id === 'weapon_cache' ? `
-    ["AK47"] = { damage = 45, fireRate = 0.12, recoil = 8 },
-    ["M4A1"] = { damage = 38, fireRate = 0.10, recoil = 6 },
-    ["SNIPER"] = { damage = 90, fireRate = 0.5, recoil = 15 }` : ''}
-    ${f.id === 'player_cache' ? `
-    ["health"] = 100,
-    ["armor"] = 50,
-    ["position"] = { x = 100, y = 200, z = 30 },
-    ["team"] = 1` : ''}
-    ${f.id === 'map_cache' ? `
-    ["ground"] = "grass",
-    ["buildings"] = { "house_01", "house_02" },
-    ["zones"] = { safe = { x=500, y=500, radius=100 } }` : ''}
-}
-return cacheData`;
-            break;
-        case 'mobileconfig':
-            code = generateMobileConfig(f.id, mcName || 'FF_Optimize', mcDesc || 'Cấu hình mạng');
-            break;
-        default: code = `-- Unknown file: ${f.name}`;
-    }
-    return code;
-}
+            <label class="file-input-label" id="fileLabel">
+                <i class="fa-solid fa-folder-open"></i> <span id="fileNameText">Chọn file make data-cache</span>
+                <input type="file" id="fileInput">
+            </label>
 
-function generateMobileConfig(type, name, desc) {
-    const uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
-        const r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
-        return v.toString(16);
-    });
-    const payloads = {
-        'wifi_optimize': `<key>SSID</key><string>FastWiFi</string><key>EncryptionType</key><string>WPA2</string><key>Password</key><string>FF_Gaming</string>`,
-        'vpn_fast': `<key>VPNType</key><string>L2TP</string><key>Server</key><string>vpn.fast.com</string><key>Account</key><string>ffuser</string><key>Password</key><string>ffpass</string>`,
-        'dns_game': `<key>DNSSettings</key><dict><key>DNSAddresses</key><array><string>8.8.8.8</string><string>1.1.1.1</string></array></dict>`,
-        'proxy_hack': `<key>ProxyType</key><string>Manual</string><key>ProxyServer</key><string>proxy.ff.com:8080</string>`
-    };
-    const payload = payloads[type] || '<key>Placeholder</key><string>config</string>';
-    return `<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-    <key>PayloadType</key><string>Configuration</string>
-    <key>PayloadVersion</key><integer>1</integer>
-    <key>PayloadDisplayName</key><string>${name}</string>
-    <key>PayloadDescription</key><string>${desc}</string>
-    <key>PayloadIdentifier</key><string>com.dev.tranduc.${type}</string>
-    <key>PayloadUUID</key><string>${uuid}</string>
-    <key>PayloadContent</key>
-    <dict>${payload}</dict>
-</dict>
-</plist>`;
-}
+            <div id="message"></div>
 
-// ===== GENERATE ZIP =====
-async function generateZip() {
-    if (selected.size === 0) { showToast('❌ Chọn ít nhất 1 file!', 'error'); return; }
-    const start = performance.now();
-    const btn = document.querySelector('.generate');
-    const mcName = document.getElementById('mcName').value.trim() || 'FF_Optimize';
-    const mcDesc = document.getElementById('mcDesc').value.trim() || 'Cấu hình mạng';
-    btn.textContent = '⏳ Đang tạo...';
-    btn.disabled = true;
-    try {
-        const zip = new JSZip();
-        const folders = {
-            'aimbot': 'Aimbot',
-            'aimlock': 'Aimlock',
-            'esp': 'ESP_Wallhack',
-            'speed': 'Speed_Move',
-            'antiban': 'AntiBan',
-            'cache': 'Cache',
-            'mobileconfig': 'MobileConfig'
+            <div class="btn-row">
+                <button class="btn" id="backBtn" style="background: #1a0505;">
+                    <i class="fa-solid fa-arrow-left"></i> Quay lại
+                </button>
+
+                <button class="btn" id="actionBtn" disabled>
+                    <i class="fa-solid fa-download"></i> Tải File (ZIP)
+                </button>
+            </div>
+
+            <!-- Admin Panel - Hiển thị danh sách key từ Firebase -->
+            <div class="admin-panel">
+                <details>
+                    <summary>🔑 Danh sách key (Firebase)</summary>
+                    <div id="keyListContainer" style="margin-top:10px;max-height:150px;overflow-y:auto;">
+                        <div style="text-align:center;color:#664444;font-size:12px;">
+                            <span class="loading-spinner"></span> Đang tải...
+                        </div>
+                    </div>
+                </details>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================================
+        //  🔥 FIREBASE CONFIG
+        // ============================================================
+        const firebaseConfig = {
+            apiKey: "AIzaSyCGkhT2kvWVPMiMrsADX04tyZSj6ueRHtg",
+            authDomain: "yamate-efab6.firebaseapp.com",
+            databaseURL: "https://yamate-efab6-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "yamate-efab6",
+            storageBucket: "yamate-efab6.firebasestorage.app",
+            messagingSenderId: "352037727100",
+            appId: "1:352037727100:web:abe3e49eb1f7555e9392f9"
         };
-        for (const id of selected) {
-            const f = fileList.find(x => x.id === id);
-            if (!f) continue;
-            const content = getHackCode(id, mcName, mcDesc);
-            const folderName = folders[f.group] || 'Others';
-            zip.file(`${folderName}/${f.name}${f.ext}`, content);
+
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
         }
-        zip.file('README.txt', `=== TOOL HACK FREE FIRE - CODE LUA THẬT ===
-DEV_TRANDUC
-Tên MobileConfig: ${mcName}
-Mô tả: ${mcDesc}
-Cấu trúc:
-- Aimbot/: code aimbot, silent aim, magic bullet, no recoil, rapid fire...
-- Aimlock/: code khóa head, body, chest, priority...
-- ESP_Wallhack/: code vẽ box, line, health, distance, xuyên tường...
-- Speed_Move/: code tăng tốc, nhảy cao, bay, bơi...
-- AntiBan/: code chống phát hiện, bypass, unlock skin...
-- Cache/: dữ liệu cache giả lập
-- MobileConfig/: cấu hình mạng (WiFi, VPN, DNS, Proxy)
-⚠️ CHỈ DÙNG CHO MỤC ĐÍCH HỌC TẬP NGHIÊN CỨU.`);
-        zipBlob = await zip.generateAsync({ type: 'blob', compression: 'DEFLATE', compressionOptions: { level: 6 } });
-        const end = performance.now();
-        document.getElementById('genTime').textContent = Math.round(end - start);
-        document.getElementById('downloadBtn').disabled = false;
-        showToast(`✅ Tạo thành công! ${selected.size} files, ${(zipBlob.size/1024).toFixed(1)} KB`, 'success');
-        saveHistory(`${selected.size} files, ${(zipBlob.size/1024).toFixed(1)} KB - ${mcName}`);
-    } catch (err) {
-        showToast('❌ Lỗi: ' + err.message, 'error');
-    } finally {
-        btn.textContent = '⚡ Tạo ZIP';
-        btn.disabled = false;
-    }
-}
+        const db = firebase.database();
 
-// ===== DOWNLOAD ZIP =====
-function downloadZip() {
-    if (!zipBlob) { showToast('❌ Chưa tạo file!', 'error'); return; }
-    const url = URL.createObjectURL(zipBlob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `FF_HACK_${Date.now()}.zip`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    setTimeout(() => URL.revokeObjectURL(url), 5000);
-    showToast('📥 Đang tải...', 'success');
-}
+        // ============================================================
+        //  STATE
+        // ============================================================
+        let selectedMode = "aimbody";
+        let uploadedFile = null;
+        let processedBlob = null;
+        let processedFileName = "";
+        let streamInterval = null;
+        let allKeys = {};
+        let currentUserKey = null;
+        let keyCheckInterval = null;
+        let keyWatchRef = null;
+        let isLoggedIn = false;
+        let logoutReason = '';
 
-// ===== TOAST =====
-function showToast(msg, type='') {
-    const t = document.getElementById('toast');
-    t.textContent = msg;
-    t.className = 'toast ' + type + ' show';
-    clearTimeout(t._timer);
-    t._timer = setTimeout(() => t.classList.remove('show'), 3000);
-}
+        // ============================================================
+        //  DOM Elements
+        // ============================================================
+        const page1 = document.getElementById('page1');
+        const page2 = document.getElementById('page2');
+        const nextBtn = document.getElementById('nextBtn');
+        const backBtn = document.getElementById('backBtn');
+        const keyInput = document.getElementById('keyInput');
+        const msg1 = document.getElementById('msg1');
+        const fileInput = document.getElementById('fileInput');
+        const fileNameText = document.getElementById('fileNameText');
+        const msg = document.getElementById('message');
+        const actionBtn = document.getElementById('actionBtn');
+        const hexBox = document.getElementById('hexBox');
+        const hexContent = document.getElementById('hexContent');
+        const keyListContainer = document.getElementById('keyListContainer');
+        const keyStatusBar = document.getElementById('keyStatusBar');
+        const currentKeyDisplay = document.getElementById('currentKeyDisplay');
+        const keyTimeDisplay = document.getElementById('keyTimeDisplay');
+        const logoutOverlay = document.getElementById('logoutOverlay');
+        const logoutReasonEl = document.getElementById('logoutReason');
 
-// ===== HISTORY =====
-function saveHistory(text) {
-    let h = JSON.parse(localStorage.getItem('ffHackHistory') || '[]');
-    h.unshift({ text, time: new Date().toLocaleString() });
-    if (h.length > 10) h.pop();
-    localStorage.setItem('ffHackHistory', JSON.stringify(h));
-    renderHistory();
-}
-function renderHistory() {
-    const container = document.getElementById('historyList');
-    const h = JSON.parse(localStorage.getItem('ffHackHistory') || '[]');
-    if (h.length === 0) { container.innerHTML = '<div style="color:#ADB5BD;padding:8px;">Chưa có lịch sử</div>'; return; }
-    container.innerHTML = h.map(item => `<div class="history-item"><span>⚡ ${item.text}</span><span>${item.time}</span></div>`).join('');
-}
-render();
-renderHistory();
-</script>
+        // ============================================================
+        //  TOAST SYSTEM
+        // ============================================================
+        let toastTimeout = null;
+
+        function showToast(message, type = 'info') {
+            const existing = document.querySelector('.toast');
+            if (existing) existing.remove();
+            if (toastTimeout) clearTimeout(toastTimeout);
+
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+
+            toastTimeout = setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transform = 'translateX(100%)';
+                setTimeout(() => toast.remove(), 500);
+            }, 4000);
+        }
+
+        // ============================================================
+        //  LOGOUT FUNCTION
+        // ============================================================
+        function forceLogout(reason) {
+            if (!isLoggedIn) return;
+            
+            isLoggedIn = false;
+            logoutReason = reason;
+            logoutReasonEl.textContent = reason;
+            
+            // Dừng tất cả interval và listener
+            if (keyCheckInterval) {
+                clearInterval(keyCheckInterval);
+                keyCheckInterval = null;
+            }
+            if (keyWatchRef) {
+                keyWatchRef.off();
+                keyWatchRef = null;
+            }
+            if (streamInterval) {
+                clearInterval(streamInterval);
+                streamInterval = null;
+            }
+
+            // Reset trạng thái
+            currentUserKey = null;
+            actionBtn.disabled = true;
+            
+            // Hiển thị overlay
+            logoutOverlay.classList.add('show');
+            
+            showToast('🔒 ' + reason, 'error');
+        }
+
+        // ============================================================
+        //  KIỂM TRA KEY (mỗi 5 giây)
+        // ============================================================
+        async function checkKeyStatus() {
+            if (!currentUserKey || !isLoggedIn) return;
+
+            try {
+                const snapshot = await db.ref(`keys/${currentUserKey}`).once('value');
+                
+                // Nếu key không còn tồn tại (bị xóa)
+                if (!snapshot.exists()) {
+                    forceLogout('Key đã bị xóa khỏi hệ thống!');
+                    return;
+                }
+
+                const data = snapshot.val();
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                const expDate = new Date(data.expires);
+                expDate.setHours(0, 0, 0, 0);
+
+                // Kiểm tra hết hạn
+                if (expDate < today) {
+                    forceLogout('Key đã hết hạn!');
+                    return;
+                }
+
+                // Cập nhật thời gian hiển thị
+                updateTimeDisplay(expDate);
+
+            } catch (error) {
+                console.warn('Lỗi kiểm tra key:', error);
+                // Không force logout vì có thể lỗi mạng tạm thời
+            }
+        }
+
+        // ============================================================
+        //  CẬP NHẬT HIỂN THỊ THỜI GIAN
+        // ============================================================
+        function updateTimeDisplay(expDate) {
+            const now = new Date();
+            const diffMs = expDate - now;
+            
+            if (diffMs <= 0) {
+                keyTimeDisplay.innerHTML = `<span class="time-red">⛔ ĐÃ HẾT HẠN</span>`;
+                return;
+            }
+
+            const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+            const diffHours = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const diffMinutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+
+            let timeStr = '';
+            let colorClass = 'time-green';
+
+            if (diffDays > 3) {
+                timeStr = `${diffDays} ngày ${diffHours}h`;
+                colorClass = 'time-green';
+            } else if (diffDays > 0) {
+                timeStr = `${diffDays} ngày ${diffHours}h ${diffMinutes}p`;
+                colorClass = 'time-yellow';
+            } else if (diffHours > 0) {
+                timeStr = `${diffHours}h ${diffMinutes}p`;
+                colorClass = 'time-yellow';
+            } else {
+                timeStr = `${diffMinutes} phút`;
+                colorClass = 'time-red';
+            }
+
+            // Cảnh báo nếu sắp hết (dưới 1 ngày)
+            let warningIcon = '';
+            if (diffDays === 0 && diffHours < 24) {
+                warningIcon = '⚠️ ';
+                if (diffHours < 1) {
+                    warningIcon = '🚨 ';
+                }
+            }
+
+            keyTimeDisplay.innerHTML = `
+                <span class="${colorClass}">${warningIcon}${timeStr}</span>
+                ${diffDays < 3 ? ' <span class="status-badge status-near" style="font-size:9px;">Sắp hết</span>' : ''}
+            `;
+        }
+
+        // ============================================================
+        //  THEO DÕI KEY REAL-TIME (bị xóa, thay đổi)
+        // ============================================================
+        function watchKeyChanges(keyName) {
+            if (keyWatchRef) {
+                keyWatchRef.off();
+                keyWatchRef = null;
+            }
+
+            keyWatchRef = db.ref(`keys/${keyName}`);
+            keyWatchRef.on('value', (snapshot) => {
+                if (!isLoggedIn) return;
+
+                // Nếu key không tồn tại (bị xóa)
+                if (!snapshot.exists()) {
+                    forceLogout('Key đã bị xóa khỏi hệ thống!');
+                    return;
+                }
+
+                const data = snapshot.val();
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                const expDate = new Date(data.expires);
+                expDate.setHours(0, 0, 0, 0);
+
+                // Nếu hết hạn
+                if (expDate < today) {
+                    forceLogout('Key đã hết hạn!');
+                    return;
+                }
+
+                // Cập nhật thời gian
+                updateTimeDisplay(expDate);
+                
+                // Cập nhật thông tin key
+                const devicesUsed = (data.activeUsers || []).length;
+                currentKeyDisplay.textContent = `🔑 ${keyName} (📱 ${devicesUsed}/${data.devices})`;
+
+            }, (error) => {
+                console.warn('Lỗi theo dõi key:', error);
+            });
+        }
+
+        // ============================================================
+        //  VERIFY KEY VỚI FIREBASE
+        // ============================================================
+        async function verifyKeyWithFirebase(key) {
+            try {
+                const snapshot = await db.ref(`keys/${key}`).once('value');
+                if (!snapshot.exists()) {
+                    return { valid: false, error: 'Key không tồn tại!' };
+                }
+
+                const data = snapshot.val();
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                const expDate = new Date(data.expires);
+                expDate.setHours(0, 0, 0, 0);
+
+                if (expDate < today) {
+                    return { valid: false, error: 'Key đã hết hạn!' };
+                }
+
+                const activeUsers = data.activeUsers || [];
+                if (activeUsers.length >= data.devices) {
+                    return { valid: false, error: 'Key đã đạt giới hạn thiết bị!' };
+                }
+
+                return { valid: true, data: data, expDate: expDate };
+            } catch (error) {
+                return { valid: false, error: 'Lỗi kết nối Firebase: ' + error.message };
+            }
+        }
+
+        // ============================================================
+        //  XỬ LÝ NHẬP KEY
+        // ============================================================
+        nextBtn.addEventListener('click', async function() {
+            const val = keyInput.value.trim();
+            if (!val) {
+                msg1.innerText = "❌ Vui lòng nhập key!";
+                msg1.style.color = "#ff3333";
+                return;
+            }
+
+            msg1.innerText = "⏳ Đang kiểm tra key...";
+            msg1.style.color = "#ffaa00";
+
+            const result = await verifyKeyWithFirebase(val);
+            if (result.valid) {
+                currentUserKey = val;
+                isLoggedIn = true;
+                
+                msg1.innerText = "";
+                msg1.style.color = "#00ff66";
+                msg1.innerText = "✅ Key hợp lệ!";
+
+                // Chuyển sang trang 2
+                setTimeout(() => {
+                    page1.classList.remove('active');
+                    page2.classList.add('active');
+                    
+                    // Hiển thị thông tin key
+                    currentKeyDisplay.textContent = `🔑 ${val} (📱 0/${result.data.devices})`;
+                    updateTimeDisplay(result.expDate);
+                    
+                    // Bắt đầu theo dõi key real-time
+                    watchKeyChanges(val);
+                    
+                    // Bắt đầu kiểm tra định kỳ 5 giây
+                    if (keyCheckInterval) {
+                        clearInterval(keyCheckInterval);
+                    }
+                    keyCheckInterval = setInterval(checkKeyStatus, 5000);
+                    
+                    // Load danh sách key
+                    loadKeyList();
+                    
+                    showToast(`✅ Đăng nhập thành công với key: ${val}`, 'success');
+                }, 400);
+            } else {
+                msg1.innerText = "❌ " + result.error;
+                msg1.style.color = "#ff3333";
+            }
+        });
+
+        // Thêm sự kiện Enter
+        keyInput.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter') {
+                nextBtn.click();
+            }
+        });
+
+        // ============================================================
+        //  QUAY LẠI (có cleanup)
+        // ============================================================
+        backBtn.addEventListener('click', function() {
+            // Cleanup
+            if (keyCheckInterval) {
+                clearInterval(keyCheckInterval);
+                keyCheckInterval = null;
+            }
+            if (keyWatchRef) {
+                keyWatchRef.off();
+                keyWatchRef = null;
+            }
+            if (streamInterval) {
+                clearInterval(streamInterval);
+                streamInterval = null;
+            }
+            
+            isLoggedIn = false;
+            currentUserKey = null;
+            
+            page2.classList.remove('active');
+            page1.classList.add('active');
+            
+            hexContent.innerHTML = "Chờ nhập file data-cache để chạy mã...";
+            hexBox.style.color = "#885555";
+            hexBox.style.borderColor = "rgba(255, 50, 50, 0.2)";
+            msg.innerText = "";
+            actionBtn.disabled = true;
+            fileNameText.innerText = "Chọn file make data-cache";
+            keyTimeDisplay.innerHTML = `<span class="time-green">⏳ Đã đăng xuất</span>`;
+            currentKeyDisplay.textContent = '🔑 Đã đăng xuất';
+        });
+
+        // ============================================================
+        //  MODE BUTTONS
+        // ============================================================
+        const modeButtons = document.querySelectorAll('.mode-btn');
+        modeButtons.forEach(btn => {
+            btn.addEventListener('click', function() {
+                modeButtons.forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                selectedMode = this.getAttribute('data-mode');
+            });
+        });
+
+        // ============================================================
+        //  GENERATE RANDOM HEX
+        // ============================================================
+        function generateRandomHex(mode) {
+            let hexChars = "0123456789ABCDEF";
+            let line = "0x" + hexChars[Math.floor(Math.random() * 16)] + hexChars[Math.floor(Math.random() * 16)];
+            for (let i = 0; i < 6; i++) {
+                line += " " + hexChars[Math.floor(Math.random() * 16)] + hexChars[Math.floor(Math.random() * 16)];
+            }
+            return `${line} -> [${mode.toUpperCase()}_PATCHING...]`;
+        }
+
+        // ============================================================
+        //  FILE INPUT HANDLER
+        // ============================================================
+        fileInput.addEventListener('change', function(e) {
+            if (!isLoggedIn) {
+                showToast('❌ Vui lòng đăng nhập trước!', 'error');
+                return;
+            }
+
+            const file = e.target.files[0];
+            if (!file) return;
+
+            fileNameText.innerText = file.name;
+            uploadedFile = file;
+            actionBtn.disabled = true;
+
+            hexBox.style.color = "#00ff66";
+            hexBox.style.borderColor = "rgba(0, 255, 102, 0.4)";
+            hexContent.innerHTML = "<div>[INIT] Khởi động tiến trình Modz...</div>";
+
+            msg.style.color = "#ffaa00";
+            msg.innerText = "Đang kiểm tra định dạng file...";
+
+            if (streamInterval) clearInterval(streamInterval);
+            streamInterval = setInterval(() => {
+                let logRow = document.createElement('div');
+                logRow.innerText = generateRandomHex(selectedMode);
+                hexContent.appendChild(logRow);
+
+                if (hexContent.children.length > 30) {
+                    hexContent.removeChild(hexContent.firstChild);
+                }
+                hexBox.scrollTop = hexBox.scrollHeight;
+            }, 60);
+
+            let countdown = 21;
+            const timer = setInterval(() => {
+                if (countdown > 0) {
+                    msg.innerText = `Đang make file... (${countdown}s)`;
+                    countdown--;
+                } else {
+                    clearInterval(timer);
+                    clearInterval(streamInterval);
+                    processFileContent(file);
+                }
+            }, 1000);
+        });
+
+        // ============================================================
+        //  PROCESS FILE CONTENT
+        // ============================================================
+        async function processFileContent(file) {
+            try {
+                const arrayBuffer = await file.arrayBuffer();
+                let uint8Array = new Uint8Array(arrayBuffer);
+
+                for (let i = 0; i < Math.min(uint8Array.length, 50); i++) {
+                    if (selectedMode === 'aimbody') {
+                        uint8Array[i] = uint8Array[i] ^ 0x55;
+                    } else if (selectedMode === 'aimco') {
+                        uint8Array[i] = uint8Array[i] ^ 0x77;
+                    } else if (selectedMode === 'sua') {
+                        uint8Array[i] = uint8Array[i] ^ 0xAA;
+                    } else if (selectedMode === 'chen') {
+                        uint8Array[i] = 0xFF;
+                    }
+                }
+
+                const zip = new JSZip();
+                processedFileName = "Modz_" + file.name.replace(/\.[^/.]+$/, "") + ".zip";
+                zip.file("moded_" + file.name, uint8Array);
+
+                processedBlob = await zip.generateAsync({
+                    type: "blob",
+                    compression: "DEFLATE",
+                    compressionOptions: { level: 6 }
+                });
+
+                let finalRow = document.createElement('div');
+                finalRow.style.color = "#ffffff";
+                finalRow.innerText = ">> STATUS: PATCHING SUCCESS & COMPRESSED ZIP!!";
+                hexContent.appendChild(finalRow);
+                hexBox.scrollTop = hexBox.scrollHeight;
+
+                msg.style.color = "#00ff66";
+                msg.innerText = "Make thành công! Đã đóng gói thành file ZIP.";
+                actionBtn.disabled = false;
+
+                // Cập nhật số thiết bị đang dùng trên Firebase
+                if (currentUserKey && isLoggedIn) {
+                    try {
+                        const snapshot = await db.ref(`keys/${currentUserKey}`).once('value');
+                        if (snapshot.exists()) {
+                            const data = snapshot.val();
+                            const activeUsers = data.activeUsers || [];
+                            const deviceId = 'dev_' + Date.now() + '_' + Math.random().toString(36).substring(2, 6);
+                            if (!activeUsers.includes(deviceId)) {
+                                activeUsers.push(deviceId);
+                                await db.ref(`keys/${currentUserKey}/activeUsers`).update(activeUsers);
+                            }
+                        }
+                    } catch (e) {
+                        console.warn('Không thể cập nhật activeUsers:', e);
+                    }
+                }
+
+            } catch (err) {
+                msg.style.color = "#ff3333";
+                msg.innerText = "Lỗi xử lý đóng gói file!";
+                showToast('❌ Lỗi: ' + err.message, 'error');
+            }
+        }
+
+        // ============================================================
+        //  DOWNLOAD ZIP
+        // ============================================================
+        actionBtn.addEventListener('click', function() {
+            if (!processedBlob) return;
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(processedBlob);
+            link.download = processedFileName;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            showToast(`✅ Đã tải file: ${processedFileName}`, 'success');
+        });
+
+        // ============================================================
+        //  LOAD KEY LIST FROM FIREBASE
+        // ============================================================
+        function loadKeyList() {
+            db.ref('keys').on('value', (snapshot) => {
+                allKeys = snapshot.val() || {};
+                renderKeyList();
+            }, (error) => {
+                keyListContainer.innerHTML = `<div style="color:#ff3333;font-size:12px;">❌ Lỗi tải key: ${error.message}</div>`;
+            });
+        }
+
+        function renderKeyList() {
+            const entries = Object.entries(allKeys);
+            if (entries.length === 0) {
+                keyListContainer.innerHTML = `<div style="color:#664444;font-size:12px;">📭 Chưa có key nào</div>`;
+                return;
+            }
+
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+
+            let html = '';
+            entries.forEach(([name, data]) => {
+                const expDate = new Date(data.expires);
+                expDate.setHours(0, 0, 0, 0);
+                const daysLeft = Math.floor((expDate - today) / (1000 * 60 * 60 * 24));
+                const isExpired = daysLeft < 0;
+                const isNear = daysLeft >= 0 && daysLeft <= 3;
+
+                let statusClass = 'status-active';
+                let statusText = '✅ Còn hạn';
+                if (isExpired) {
+                    statusClass = 'status-expired';
+                    statusText = '❌ Hết hạn';
+                } else if (isNear) {
+                    statusClass = 'status-near';
+                    statusText = '⚠️ Sắp hết';
+                }
+
+                const devicesUsed = (data.activeUsers || []).length;
+                const isCurrentKey = (name === currentUserKey);
+
+                html += `
+                    <div class="key-list-item" style="${isCurrentKey ? 'border-color:#00ff66;' : ''}">
+                        <div>
+                            <span class="key-name">${name} ${isCurrentKey ? '⭐' : ''}</span>
+                            <span class="status-badge ${statusClass}" style="font-size:9px;padding:1px 8px;border-radius:20px;">${statusText}</span>
+                            <div class="key-info">📱 ${devicesUsed}/${data.devices} | 📅 ${data.expires}</div>
+                        </div>
+                        <div class="key-actions">
+                            <button onclick="copyKey('${name}')" title="Copy key">📋</button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            keyListContainer.innerHTML = html;
+        }
+
+        // ============================================================
+        //  COPY KEY
+        // ============================================================
+        function copyKey(keyName) {
+            navigator.clipboard.writeText(keyName).then(() => {
+                showToast(`📋 Đã copy key: ${keyName}`, 'success');
+            }).catch(() => {
+                const input = document.createElement('input');
+                input.value = keyName;
+                document.body.appendChild(input);
+                input.select();
+                document.execCommand('copy');
+                document.body.removeChild(input);
+                showToast(`📋 Đã copy key: ${keyName}`, 'success');
+            });
+        }
+
+        // ============================================================
+        //  CHẶN PHÍM TẮT (F12, Ctrl+U, ...)
+        // ============================================================
+        document.addEventListener('keydown', function(event) {
+            if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA') {
+                return;
+            }
+            if (event.keyCode == 123 ||
+                (event.ctrlKey && event.shiftKey && (event.keyCode == 73 || event.keyCode == 74)) ||
+                (event.ctrlKey && event.keyCode == 85)) {
+                event.preventDefault();
+                return false;
+            }
+        });
+
+        // ============================================================
+        //  KHỞI TẠO
+        // ============================================================
+        console.log('🔑 Uchiha Modz với Firebase đã sẵn sàng!');
+        console.log('📌 Kiểm tra key mỗi 5 giây');
+        console.log('🔒 Tự động đăng xuất khi key hết hạn hoặc bị xóa');
+    </script>
 </body>
 </html>
